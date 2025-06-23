@@ -1,0 +1,255 @@
+[
+    {
+        "model": "security.NXTPermission",
+        "pk": 1,
+        "fields": {
+            "name": "Visualizar Cliente",
+            "code": "view_client",
+            "is_active": true,
+            "created": "2022-10-10T23:10:32.355Z",
+            "modified": "2022-10-10T23:10:32.355Z"
+        }
+    },
+    {
+        "model": "security.NXTPermission",
+        "pk": 2,
+        "fields": {
+            "name": "Criar Cliente",
+            "code": "create_client",
+            "is_active": true,
+            "created": "2022-10-10T23:10:32.355Z",
+            "modified": "2022-10-10T23:10:32.355Z"
+        }
+    },
+    {
+        "model": "security.NXTPermission",
+        "pk": 3,
+        "fields": {
+            "name": "Atualizar Cliente",
+            "code": "update_client",
+            "is_active": true,
+            "created": "2022-10-10T23:10:32.355Z",
+            "modified": "2022-10-10T23:10:32.355Z"
+        }
+    },
+    {
+        "model": "security.NXTPermission",
+        "pk": 4,
+        "fields": {
+            "name": "Desativar Cliente",
+            "code": "deactive_client",
+            "is_active": true,
+            "created": "2022-10-10T23:10:32.355Z",
+            "modified": "2022-10-10T23:10:32.355Z"
+        }
+    },
+    {
+        "model": "security.NXTPermission",
+        "pk": 5,
+        "fields": {
+            "name": "Visualizar Usuários",
+            "code": "view_user",
+            "is_active": true,
+            "created": "2022-10-10T23:10:32.355Z",
+            "modified": "2022-10-10T23:10:32.355Z"
+        }
+    },
+    {
+        "model": "security.NXTPermission",
+        "pk": 6,
+        "fields": {
+            "name": "Criar Usuário",
+            "code": "create_user",
+            "is_active": true,
+            "created": "2022-10-10T23:10:32.355Z",
+            "modified": "2022-10-10T23:10:32.355Z"
+        }
+    },
+    {
+        "model": "security.NXTPermission",
+        "pk": 7,
+        "fields": {
+            "name": "Atualizar Usuário",
+            "code": "update_user",
+            "is_active": true,
+            "created": "2022-10-10T23:10:32.355Z",
+            "modified": "2022-10-10T23:10:32.355Z"
+        }
+    },
+    {
+        "model": "security.NXTPermission",
+        "pk": 8,
+        "fields": {
+            "name": "Desativar Usuário",
+            "code": "deactive_user",
+            "is_active": true,
+            "created": "2022-10-10T23:10:32.355Z",
+            "modified": "2022-10-10T23:10:32.355Z"
+        }
+    },
+    {
+        "model": "security.NXTPermission",
+        "pk": 9,
+        "fields": {
+            "name": "Visualizar Cliente Usuário",
+            "code": "view_client_user",
+            "is_active": true,
+            "created": "2022-10-10T23:10:32.355Z",
+            "modified": "2022-10-10T23:10:32.355Z"
+        }
+    },
+    {
+        "model": "security.NXTPermission",
+        "pk": 10,
+        "fields": {
+            "name": "Criar Clente Usuário",
+            "code": "create_client_user",
+            "is_active": true,
+            "created": "2022-10-10T23:10:32.355Z",
+            "modified": "2022-10-10T23:10:32.355Z"
+        }
+    },
+    {
+        "model": "security.NXTPermission",
+        "pk": 11,
+        "fields": {
+            "name": "Atualizar Cliente Usuário",
+            "code": "update_cliente_user",
+            "is_active": true,
+            "created": "2022-10-10T23:10:32.355Z",
+            "modified": "2022-10-10T23:10:32.355Z"
+        }
+    },
+    {
+        "model": "security.NXTPermission",
+        "pk": 12,
+        "fields": {
+            "name": "Desativar Cliente Usuário",
+            "code": "deactive_client_user",
+            "is_active": true,
+            "created": "2022-10-10T23:10:32.355Z",
+            "modified": "2022-10-10T23:10:32.355Z"
+        }
+    },
+    {
+        "model": "security.NXTPermission",
+        "pk": 13,
+        "fields": {
+            "name": "Atendimento Cliente",
+            "code": "attendance_client",
+            "is_active": true,
+            "created": "2022-10-10T23:10:32.355Z",
+            "modified": "2022-10-10T23:10:32.355Z"
+        }
+    },
+    {
+        "model": "security.NXTPermission",
+        "pk": 14,
+        "fields": {
+            "name": "Contrato Cliente",
+            "code": "contract_client",
+            "is_active": true,
+            "created": "2022-10-10T23:10:32.355Z",
+            "modified": "2022-10-10T23:10:32.355Z"
+        }
+    },
+    {
+        "model": "security.NXTPermission",
+        "pk": 15,
+        "fields": {
+            "name": "Principais Cliente",
+            "code": "main_client",
+            "is_active": true,
+            "created": "2022-10-10T23:10:32.355Z",
+            "modified": "2022-10-10T23:10:32.355Z"
+        }
+    },
+    {
+        "model": "security.NXTPermission",
+        "pk": 16,
+        "fields": {
+            "name": "Visualizar Veículos",
+            "code": "view_source",
+            "is_active": true,
+            "created": "2022-10-10T23:10:32.355Z",
+            "modified": "2022-10-10T23:10:32.355Z"
+        }
+    },
+    {
+        "model": "security.NXTPermission",
+        "pk": 17,
+        "fields": {
+            "name": "Criar Veículos",
+            "code": "create_source",
+            "is_active": true,
+            "created": "2022-10-10T23:10:32.355Z",
+            "modified": "2022-10-10T23:10:32.355Z"
+        }
+    },
+    {
+        "model": "security.NXTPermission",
+        "pk": 18,
+        "fields": {
+            "name": "Atualizar Veículos",
+            "code": "update_source",
+            "is_active": true,
+            "created": "2022-10-10T23:10:32.355Z",
+            "modified": "2022-10-10T23:10:32.355Z"
+        }
+    },
+    {
+        "model": "security.NXTPermission",
+        "pk": 19,
+        "fields": {
+            "name": "Desativar Veículo",
+            "code": "deactive_source",
+            "is_active": true,
+            "created": "2022-10-10T23:10:32.355Z",
+            "modified": "2022-10-10T23:10:32.355Z"
+        }
+    },
+    {
+        "model": "security.NXTPermission",
+        "pk": 20,
+        "fields": {
+            "name": "Visualizar Notícias",
+            "code": "view_news",
+            "is_active": true,
+            "created": "2022-10-10T23:10:32.355Z",
+            "modified": "2022-10-10T23:10:32.355Z"
+        }
+    },
+    {
+        "model": "security.NXTPermission",
+        "pk": 21,
+        "fields": {
+            "name": "Criar Notícias",
+            "code": "create_news",
+            "is_active": true,
+            "created": "2022-10-10T23:10:32.355Z",
+            "modified": "2022-10-10T23:10:32.355Z"
+        }
+    },
+    {
+        "model": "security.NXTPermission",
+        "pk": 22,
+        "fields": {
+            "name": "Atualizar Notícias",
+            "code": "update_news",
+            "is_active": true,
+            "created": "2022-10-10T23:10:32.355Z",
+            "modified": "2022-10-10T23:10:32.355Z"
+        }
+    },
+    {
+        "model": "security.NXTPermission",
+        "pk": 23,
+        "fields": {
+            "name": "Desativar Notícias",
+            "code": "deactive_news",
+            "is_active": true,
+            "created": "2022-10-10T23:10:32.355Z",
+            "modified": "2022-10-10T23:10:32.355Z"
+        }
+    }
+]

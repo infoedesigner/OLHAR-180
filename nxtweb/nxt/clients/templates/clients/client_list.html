@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% load widget_tweaks security_tags bootstrap5 %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item active" aria-current="page">Clientes</li>
+{% endblock %}
+
+{% block main %}
+<div class="row">
+    <div class="col-12">
+        <div class="card border p-0">
+            <div class="card-body">
+                <form action="" method="get">
+                    <div class="form-group">
+                        <div class="input-group">
+                            {% render_field form.q placeholder=form.q.label class="form-control" %}
+                            <span class="input-group-text">
+                                <button type="submit" class="btn btn-primary btn-sm">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                </form>
+                <p style="text-align: right;">
+                    <a href="{% url 'clients:client_create' %}" class="btn btn-primary">Novo Cliente</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    {% for client in object_list %}
+    <div class="col-xl-3 col-sm-6 col-md-6">
+        <div class="card border p-0">
+            <div class="card-header">
+                <h3 class="card-title">{{ client.profile }}</h3>
+                <div class="card-options">
+                    {% if request.user|check_nxt_permission:'update_client' %}
+                    <a href="{% url 'clients:client_update' client.pk %}" class="btn btn-info btn-sm" data-bs-toggle="tooltip" title="Editar Cliente">
+                        <i class="fa fa-pencil"></i>
+                    </a>
+                    {% endif %}
+                    {% if request.user|check_nxt_permission:'deactive_client' %}
+                    <a href="javascript:void(0)" class="btn btn-danger btn-sm ms-2" data-bs-toggle="tooltip" title="Dsativar Cliente">
+                        <i class="fa fa-times-circle"></i>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="card-body text-center">
+                <a href="{% url 'clients:client_detail' client.pk %}">
+                    {% if client.brand %}
+                    <span class="avatar avatar-xxl brround cover-image" data-bs-image-src="{{ client.brand.url }}" style="background: url('{{ client.brand.url }}') center center;"></span>
+                    {% else %}
+                    <span class="avatar avatar-xxl brround cover-image" data-bs-image-src="{{ STATIC_URL }}assets/images/users/15.jpg" style="background: url(&quot;{{ STATIC_URL }}assets/images/users/15.jpg&quot;) center center;"></span>
+                    {% endif %}
+                    <h4 class="h4 mb-0 mt-3">{{ client.company_name }}</h4>
+                    <p class="card-text">{{ client.cnpj_cpf }}</p>
+                </a>
+            </div>
+            <div class="card-footer text-center">
+                <p style="text-align: right;">
+                    {% if request.user|check_nxt_permission:'attendance_client' %}
+                    <a href="{% url 'clients:client_attendance' client.pk %}" class="btn btn-primary">
+                        <i class="fa fa-list"></i>
+                        Atendimento
+                    </a>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <p class="alert alert-info text-center">
+                    Nenhum cliente encontrado
+                </p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    <div class="col-12">
+        {% bootstrap_pagination page_obj extra=request.GET.urlencode %}
+    </div>
+</div>
+{% endblock %}

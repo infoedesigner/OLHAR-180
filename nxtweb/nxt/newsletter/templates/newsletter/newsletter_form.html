@@ -1,0 +1,175 @@
+{% extends "clients/client_base.html" %}
+
+{% load bootstrap5 %}
+
+{% block head %}
+<link href="{{ STATIC_URL }}assets/css/multi-select.css" rel="stylesheet" />
+<style>
+.ms-container {
+    width: 100%;
+}
+</style>
+{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item" aria-current="page">
+    <a href="{% url 'clients:client_detail' view.client.pk %}">{{ client }}</a>
+</li>
+<li class="breadcrumb-item" aria-current="page">
+    <a href="{% url 'newsletter:newsletter_list' view.client.pk %}">Newsletters</a>
+</li>
+<li class="breadcrumb-item active" aria-current="page">
+    {{ object|default:'Nova Newsletter' }}
+</li>
+{% endblock %}
+
+{% block page_title %}
+{{ object|default:'Nova Newsletter' }}
+{% endblock %}
+
+{% block client_newsletters_class %} class="active"{% endblock %}
+
+{% block client_main %}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">{{ object|default:'Nova Newsletter' }}</h3>
+    </div>
+    <div class="card-body">
+        <form action="" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-6">
+                    {% bootstrap_field form.title %}
+                </div>
+               
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    {% bootstrap_field form.categories %}
+                    <button id="select-all-categories" type="button" class="btn btn-secondary">Selecionar todas categorias</button>
+                    <button id="deselect-all-categories" type="button" class="btn btn-secondary">Remover categorias selecionadas</button>
+                </div>
+                <div class="col-12">
+                    {% bootstrap_field form.contacts %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <fieldset>
+                        <legend>Horários</legend>
+                        <div id="formset">
+                            {{ formset.management_form }}
+                            {% for item_form in formset %}
+                            <div class="item-formset">
+                                <div class="row">
+                                    <div class="col-md-5">
+                                        {{ item_form.id }}
+                                        {% bootstrap_field item_form.day %}
+                                    </div>
+                                    <div class="col-md-5">
+                                        {% bootstrap_field item_form.time %}
+                                    </div>
+                                    <div class="col-md-2">
+                                        <span style="display: none;">{{ item_form.DELETE }}</span>
+                                        <a style="margin-top: 35px;" href="#"
+                                           class="btn btn-danger delete-schedule">
+                                            <i class="fa fa-close"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <p style="text-align: right;">
+                            <a href="#" class="btn btn-success" id="add-schedule">
+                                <i class="fa fa-plus"></i> Adicionar Outro
+                            </a>
+                        </p>
+                    </fieldset>
+                </div>
+            </div>
+            <div style="display: none;" id="item-formset-template">
+                <div class="item-formset">
+                    <div class="row">
+                        <div class="col-md-5">
+                            {% bootstrap_field formset.empty_form.day %}
+                        </div>
+                        <div class="col-md-5">
+                            {% bootstrap_field formset.empty_form.time %}
+                        </div>
+                        <div class="col-md-2">
+                            <span style="display: none;">{{ formset.empty_form.DELETE }}</span>
+                            <a style="margin-top: 35px;" href="#"
+                               class="btn btn-danger delete-schedule">
+                                <i class="fa fa-close"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <p style="text-align: right;">
+                <a href="{% url 'newsletter:newsletter_list' view.client.pk %}" class="btn btn-default">Voltar</a>
+                {% comment %} <a href="{% url 'newsletter:newsletter_preview' view.client.pk view.newsletter.pk %}" class="btn btn-secondary" id="preview-button">Preview</a> {% endcomment %}
+                <button type="submit" class="btn btn-primary">Salvar</button>
+            </p>
+            {% comment %} <script>
+                document.getElementById("preview-button").addEventListener("click", function(event) {
+                    event.preventDefault();
+                    let form = event.target.closest("form");
+                    let formData = new FormData(form);
+                    let actionUrl = "{% url 'newsletter:newsletter_preview' client_id=view.client.pk %}";
+                    window.open(actionUrl + '?' + new URLSearchParams(formData).toString(), '_blank');
+                });
+            </script> {% endcomment %}
+            
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<!-- MULTI SELECT JS-->
+<script src="{{ STATIC_URL }}assets/js/jquery.multi-select.js"></script>
+<script>
+$(function(){
+    // SELECT BOX
+    $('#id_contacts').multiSelect({
+        selectableHeader: 'Todos os Contatos',
+        selectionHeader: 'Contatos Selecionados',
+        filter: true,
+		multiple: true
+    });
+    // SELECT BOX for Categories
+    $('#id_categories').multiSelect({
+        selectableHeader: 'Todas as Categorias',
+        selectionHeader: 'Categorias Selecionadas',
+        filter: true,
+        multiple: true
+    });
+    $("#select-all-categories").click(function(){
+        $('#id_categories').multiSelect('select_all');
+    });
+
+    $("#deselect-all-categories").click(function(){
+        $('#id_categories').multiSelect('deselect_all');
+    });
+    $("[name$='-time']").mask('00:00', {placeholder: 'hh:mm'})
+    $("#add-schedule").on("click", function (e) {
+        e.preventDefault()
+        let count = $('#id_schedules-TOTAL_FORMS').attr("autocomplete", "off").val()
+        let tmplMarkup = $("#item-formset-template").html()
+        let compiledTmpl = tmplMarkup.replace(/__prefix__/g, count)
+        $("#formset").append(compiledTmpl)
+        $("[name$='-time']").mask('00:00', {placeholder: 'hh:mm'})
+        $('#id_schedules-TOTAL_FORMS').attr('value', count + 1)
+    });
+    $("#formset").on("click", '.delete-schedule', function (e) {
+        e.preventDefault()
+        let $this = $(this)
+        $this.closest("div").find("input").attr("checked", "checked")
+        $this.closest(".item-formset").hide()
+    })
+})
+</script>
+{% endblock %}

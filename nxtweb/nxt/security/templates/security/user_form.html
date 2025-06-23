@@ -1,0 +1,360 @@
+{% extends "base.html" %}
+
+{% load bootstrap5 %}
+
+{% block head %}
+<link href="{{ STATIC_URL }}assets/css/multi-select.css" rel="stylesheet" />
+<style>
+.ms-container {
+    width: 100%;
+}
+</style>
+{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item" aria-current="page">
+    <a href="{% url 'security:user_list' %}">Usuários</a>
+</li>
+<li class="breadcrumb-item active" aria-current="page">
+    {{ object|default:'Adicionar Usuário' }}
+</li>
+{% endblock %}
+
+{% block main %}
+<form action="" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Dados Básicos</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    {% bootstrap_field form.name %}
+                </div>
+                <div class="col-md-6">
+                    {% bootstrap_field form.email %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.birth_date %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.naturalness_uf %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.naturalness %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.degree %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.marital_status %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.number_of_children %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.childrens_names %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.childrens_cpfs %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Endereço</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    {% bootstrap_field form.address %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.number %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.complement %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.neighborhood %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.state %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.city %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.postal_code %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Documentos</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    {% bootstrap_field form.cpf %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.rg %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.rg_entity_uf %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.rg_expedition %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.work_card %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.pis_pasep %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.voter_registration %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.driver_card %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.driver_card_entity_uf %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.driver_card_expedition %}
+                </div>
+                <div class="col-12">
+                    <div class="row">
+                        <div class="col-md-6">
+                            {% bootstrap_field form.photo %}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="id_brand">Foto Atual</label>
+                            <p class="text-center" style="max-height: 200px;">
+                                <img id="photoPlaceholder" {% if object and object.photo %}src="{{ object.photo.url|default:'' }}"{% else %}src="{{ STATIC_URL }}assets/images/pngs/1.png"{% endif %} alt="" style="max-height: 200px;" />
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Contato</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    {% bootstrap_field form.phone %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.home_phone %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.whatsapp %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.phone_message %}
+                </div>
+                <div class="col-md-12">
+                    {% bootstrap_field form.phone_contact %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Dados Bancários</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    {% bootstrap_field form.bank %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.bank_agency %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.bank_number %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.bank_operation %}
+                </div>
+            </div>
+            <h3>Dados Pix 1</h3>
+            <div class="row">
+                <div class="col-md-4">
+                    {% bootstrap_field form.bank_pix1 %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.bank_pix1_key_type %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.bank_pix1_value %}
+                </div>
+            </div>
+            <h3>Dados Pix 2</h3>
+            <div class="row">
+                <div class="col-md-4">
+                    {% bootstrap_field form.bank_pix2 %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.bank_pix2_key_type %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.bank_pix2_value %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Permissões</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    {% bootstrap_field form.is_active %}
+                </div>
+                {% if not object %}
+                <div class="col-md-4">
+                    {% bootstrap_field form.new_password %}
+                </div>
+                {% endif %}
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    {{ form.nxt_permissions }}
+                </div>
+            </div>
+            <hr>
+            <p style="text-align: right;">
+                {% if object and object == request.user %}
+                <a href="{% url 'core:index' %}" class="btn btn-default">Voltar</a>
+                {% else %}
+                <a href="{% url 'security:user_list' %}" class="btn btn-default">Voltar</a>
+                {% endif %}
+                <button type="submit" class="btn btn-primary">Salvar</button>
+            </p>
+        </div>
+    </div>
+</form>
+{% endblock %}
+{% block js %}
+<script src="{{ STATIC_URL }}assets/js/jquery.multi-select.js"></script>
+<script>
+$(function(){
+    let imgInput = document.getElementById('id_photo')
+    let imgPlacerholder = document.getElementById('photoPlaceholder')
+    imgInput.onchange = evt => {
+        const [file] = imgInput.files
+        if (file) {
+            imgPlacerholder.src = URL.createObjectURL(file)
+            imgPlacerholder.style = 'display: block;max-height:200px;'
+        }
+    }
+    $('#id_postal_code').mask('00000-000')
+    $('#id_phone').mask('(00) 00000-0000')
+    $('#id_home_phone').mask('(00) 0000-0000')
+    $('#id_whatsapp').mask('(00) 00000-0000')
+    $('#id_message_phone').mask('(00) 00000-0000')
+    $("#id_birth_date").bootstrapdatepicker({
+        language: 'pt-BR',
+        todayHighlight: true,
+        format: 'dd/mm/yyyy',
+        autoclose: true
+    })
+    $("#id_rg_expedition").bootstrapdatepicker({
+        language: 'pt-BR',
+        todayHighlight: true,
+        format: 'dd/mm/yyyy',
+        autoclose: true
+    })
+    $("#id_driver_card_expedition").bootstrapdatepicker({
+        language: 'pt-BR',
+        todayHighlight: true,
+        format: 'dd/mm/yyyy',
+        autoclose: true
+    })
+    $("#id_bank").select2()
+    $("#id_bank_pix1").select2()
+    $("#id_bank_pix2").select2()
+    $('#id_nxt_permissions').multiSelect({
+        selectableHeader: 'Todos as Permissões',
+        selectionHeader: 'Permissões do Usuário',
+        filter: true,
+		multiple: true
+    })
+    $("#id_state").select2()
+    $("#id_city").select2()
+    let city_url = '{% url "api:city-list" %}'
+    function filterCities(currentValue) {
+        let state = $("#id_state").val()
+        let cities = "<option value=''>---------</option>"
+        if(state) {
+            axios({
+                method: 'GET',
+                url: city_url + `?state=${state}`,
+                responseType: 'json'
+            }).then(res => {
+                for (let index = 0; index < res.data.length; index++) {
+                    const city = res.data[index];
+                    const option = `<option value="${city.id}">${city.name}</option>`
+                    cities = cities + option
+                }
+                $("#id_city").html(cities)
+                if(currentValue != null) {
+                    $("#id_city").val(currentValue)
+                }
+                $("#id_city").trigger('change')
+            })
+        } else {
+            $("#id_city").html(cities)
+            $("#id_city").trigger('change')
+        }
+    }
+    filterCities($("#id_city").val())
+    $("#id_state").on('change', function(e){
+        filterCities(null)
+    })
+
+    $("#id_naturalness_uf").select2()
+    $("#id_naturalness").select2()
+    function filterCitiesNaturalness(currentValue) {
+        let state = $("#id_naturalness_uf").val()
+        let cities = "<option value=''>---------</option>"
+        if(state) {
+            axios({
+                method: 'GET',
+                url: city_url + `?state=${state}`,
+                responseType: 'json'
+            }).then(res => {
+                for (let index = 0; index < res.data.length; index++) {
+                    const city = res.data[index];
+                    const option = `<option value="${city.id}">${city.name}</option>`
+                    cities = cities + option
+                }
+                $("#id_naturalness").html(cities)
+                if(currentValue != null) {
+                    $("#id_naturalness").val(currentValue)
+                }
+                $("#id_naturalness").trigger('change')
+            })
+        } else {
+            $("#id_naturalness").html(cities)
+            $("#id_naturalness").trigger('change')
+        }
+    }
+    filterCitiesNaturalness($("#id_naturalness").val())
+    $("#id_naturalness_uf").on('change', function(e){
+        filterCitiesNaturalness(null)
+    })
+})
+</script>
+{% endblock %}

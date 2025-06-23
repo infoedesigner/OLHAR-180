@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% load bootstrap5 clients_tags  %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item" aria-current="page">
+    <a href="{% url 'clients:clipping_list' view.client.slug %}">Recortes Mais recentes }}</a>
+</li>
+<li class="breadcrumb-item active" aria-current="page">
+    {{ clipping.source.media }}
+</li>
+{% endblock %}
+
+{% block page_title %}
+{{ clipping.source.media }}
+{% endblock %}
+
+{% block main %}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">{{ clipping.source.media }}</h3>
+    </div>
+    <div class="card-body">
+        {% with source=clipping.source.media.source %}
+        <div class="row">
+            <div class="col-md-8">
+                <div class="row">
+                    <div class="col-6">
+                        <p>
+                        {% if source.source_type == 'diariooficial' %}
+                            <a download="diariooficial-{{ source.pk }}.pdf" href="{{ clipping.source.document.url }}" class="btn btn-primary">Baixar Diário</a>
+                        {% elif source.source_type == 'site' %}
+                            <a target="_blank" href="{{ clipping.source.media.url }}" class="btn btn-primary">Ir para a Notícia</a>
+                        {% endif %}
+                        </p>
+                    </div>
+                    <div class="col-6">
+                        <p style="text-align: right;">
+                            {% if user.profile != 'cliente' %}
+                            <a href="{% url 'media:news_update' clipping.source.media.pk %}" class="btn btn-primary">Editar Notícia</a>
+                            <a data-bs-target="#modalDeleteClipping" data-bs-toggle="modal" href="javascript:void(0)" class="btn btn-danger">Remover Clipping</a>
+                            {% endif %}
+                        </p>
+                        <div class="modal fade" id="modalDeleteClipping">
+                            <div class="modal-dialog" role="document">
+                                <form action="{% url 'clients:clipping_delete' clipping.pk %}" method="post">
+                                    {% csrf_token %}
+                                    <div class="modal-content modal-content-demo">
+                                        <div class="modal-header">
+                                            <h6 class="modal-title">Remover Clipping</h6>
+                                            <button aria-label="Close" class="btn-close" data-bs-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <h4>Deseja realmente remover este clipping deste cliente?</h4>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <a href="javascript:void(0)" class="btn btn-default" data-bs-dismiss="modal">Fechar</a>
+                                            <button type="submit" class="btn btn-danger">Remover Clipping</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="alert alert-info">
+                    <h3>Informações</h3>
+                    <p>
+                        <strong>URL</strong>: {{ clipping.source.media.url }}<br />
+                        <strong>Fonte</strong>: {{ source }}<br />
+                        <strong>Data</strong>: {{ clipping.source.media.publish_date|date:'d/m/Y' }}<br />
+                        <strong>Data Clipping</strong>: {{ clipping.created|date:'d/m/Y H:i' }}<br />
+                        <strong>Categoria</strong>: {{ clipping.category }}<br />
+                    </p>
+                </div>
+                <div class="md-3">
+                    {% if source.source_type == 'site' %}
+                    {{ clipping.content|safe }}
+                    {% elif source.source_type == 'impresso' %}
+                    <img src="{{ clipping.source.newspaper_crop }}" class="img-responsive">
+                    {% if clipping.source.newspaper_crop %}
+                    <div class="text-center">
+                        <img src="data:image/png;base64,{{ clipping.source.newspaper_crop }}" alt="" >
+                    </div>
+                    {% endif %}
+                    {{ clipping.content|safe }}
+                    {% else %}
+                    {{ clipping.text|mark_keyword:clipping.keyword_used|safe }}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-4">
+                <h3>Avaliação</h3>
+                <form action="" method="post">
+                    {% csrf_token %}
+                    {% bootstrap_field form.approved %}
+                    {% bootstrap_field form.featured %}
+                    {% bootstrap_field form.marketing_value %}
+                    {% bootstrap_field form.has_strength %}
+                    {% bootstrap_field form.has_opportunity %}
+                    {% bootstrap_field form.has_weakness %}
+                    {% bootstrap_field form.has_weakness %}
+                    {% bootstrap_field form.rating %}
+                    {% bootstrap_field form.mention %}
+                    {% bootstrap_field form.subject %}
+                    <p style="text-align: right;">
+                        <button type="submit" class="btn btn-primary">Salvar</button>
+                    </p>
+                </form>
+            </div>
+        </div>
+        {% endwith %}
+    </div>
+</div>
+{% endblock %}

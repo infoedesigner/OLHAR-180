@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% load widget_tweaks security_tags bootstrap5 %}
+
+{% block page_title %}Modelos de Notificação{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item active" aria-current="page">Modelos de Notificação</li>
+{% endblock %}
+
+{% block main %}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Modelos de Notificação</h3>
+    </div>
+    <div class="card-body">
+        <p style="text-align: right;">
+            <a href="{% url 'notifications:notification_model_create' %}" class="btn btn-primary">Novo Modelo</a>
+        </p>
+        <div class="table-responsive">
+            <table class="table border text-nowrap text-md-nowrap table-striped mb-0">
+                <thead>
+                    <tr>
+                        <th>Título</th>
+                        <th>Tipo</th>
+                        <th>Última atualização</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for notificatio_model in object_list %}
+                <tr>
+                    <td>{{ notificatio_model.title }}</td>
+                    <td>{{ notificatio_model.get_notification_type_display }}</td>
+                    <td>{{ notificatio_model.modified|date:'d/m/Y H:i' }}</td>
+                    <td>
+                        <a href="{% url 'notifications:notification_model_update' notificatio_model.pk %}" data-bs-placement="top" data-bs-toggle="tooltip" title="Editar Modelo" class="btn btn-primary">
+                            <i class="fa fa-pencil"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4">
+                        <p class="alert alert-info">Nenhum modelo encontrado</p>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

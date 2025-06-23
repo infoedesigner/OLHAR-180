@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+
+{% load bootstrap5 widget_tweaks %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item" aria-current="page">
+    <a href="{% url 'clients:client_list' %}">Clientes</a>
+</li>
+<li class="breadcrumb-item active" aria-current="page">
+    {{ object|default:'Adicionar Cliente' }}
+</li>
+{% endblock %}
+
+{% block main %}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">{{ object|default:'Adicionar Cliente' }}</h3>
+    </div>
+    <div class="card-body">
+        <form action="" method="post" enctype="multipart/form-data" novalidate>
+            {% csrf_token %}
+            <div class="row">
+                {% for field in form %}
+                {% if field.name == 'company_name' %}
+                <div class="col-md-6">
+                    {% bootstrap_field field %}
+                </div>
+                {% elif field.name == 'slug' %}
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label" for="id_company_name">{{ field.label }}</label>
+                        <div class="input-group">
+                            <span class="input-group-text" id="basic-addon3">https://sistema.agencianxt.com.br/clientes/</span>
+                            {% render_field field class="form-control" %}
+                        </div>
+                    </div>
+                </div>
+                {% elif field.name != 'observations' and field.name != 'brand' %}
+                <div class="col-md-4">
+                    {% bootstrap_field field %}
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-md-6">
+                    {% bootstrap_field form.brand %}
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="id_brand">Logo Atual</label>
+                    <p class="text-center" style="max-height: 200px;">
+                        <img id="brandPlaceholder" {% if object and object.brand %}src="{{ object.brand.url|default:'' }}"{% else %}src="{{ STATIC_URL }}assets/images/pngs/1.png"{% endif %} alt="" style="max-height: 200px;" />
+                    </p>
+                </div>
+                <div class="col-md-12">
+                    {% bootstrap_field form.observations %}
+                </div>
+            </div>
+            <hr>
+            <p style="text-align: right;">
+                <a href="{% url 'clients:client_list' %}" class="btn btn-default">Voltar</a>
+                <button type="submit" class="btn btn-primary">Salvar</button>
+            </p>
+        </form>
+    </div>
+</div>
+{{ form.media }}
+{% endblock %}
+{% block js %}
+<script>
+$(function(){
+    let imgInput = document.getElementById('id_brand')
+    let imgPlacerholder = document.getElementById('brandPlaceholder')
+    let slugChange = false
+    imgInput.onchange = evt => {
+        const [file] = imgInput.files
+        if (file) {
+            imgPlacerholder.src = URL.createObjectURL(file)
+            imgPlacerholder.style = 'display: block;max-height:200px;'
+        }
+    }
+    function updateCnpjCpfMask() {
+        let profile = $("#id_profile").val()
+        if(profile == 'Pessoa Jurídica') {
+            $("#id_cnpj_cpf").mask("00.000.000/0000-00")
+        } else if(profile == 'Pessoa Física') {
+            $("#id_cnpj_cpf").mask("000.000.000-00")
+        } else {
+            $("#id_cnpj_cpf").unmask()
+        }
+    }
+    updateCnpjCpfMask()
+    $("#id_profile").on('change', function(e){
+        updateCnpjCpfMask()
+    })
+    $("#id_postal_code").mask("00000-000")
+    var MaskBehavior = function (val) {
+        return val.replace(/\D/g, '').length === 15 ? '(00)00000-0000' : '(00)00000-0009';
+    }
+    var spOptions = {
+        onKeyPress: function (val, e, field, options) {
+            field.mask(MaskBehavior.apply({}, arguments), options);
+        }
+    }
+    $('#id_phone').mask(MaskBehavior, spOptions);
+    $('#id_cell').mask(MaskBehavior, spOptions);
+    const slugify = text =>
+        text.toString()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .toLowerCase()
+            .trim()
+            .replace(/\s+/g, '-')
+            .replace(/[^\w-]+/g, '')
+            .replace(/--+/g, '-')
+    $("#id_company_name").on("keyup", function(e){
+        if (!slugChange) {
+            $("#id_slug").val(slugify(this.value))
+        }
+    })
+    $("#id_slug").on("keyup", function(e){
+        slugChange = true
+    })
+    $("#id_state").select2()
+    $("#id_city").select2()
+    let city_url = '{% url "api:city-list" %}'
+    function filterCities(currentValue) {
+        let state = $("#id_state").val()
+        let cities = "<option value=''>---------</option>"
+        if(state) {
+            axios({
+                method: 'GET',
+                url: city_url + `?state=${state}`,
+                responseType: 'json'
+            }).then(res => {
+                for (let index = 0; index < res.data.length; index++) {
+                    const city = res.data[index];
+                    const option = `<option value="${city.id}">${city.name}</option>`
+                    cities = cities + option
+                }
+                $("#id_city").html(cities)
+                if(currentValue != null) {
+                    $("#id_city").val(currentValue)
+                }
+                $("#id_city").trigger('change')
+            })
+        } else {
+            $("#id_city").html(cities)
+            $("#id_city").trigger('change')
+        }
+    }
+    let currentCity = $("#id_city").val()
+    filterCities(currentCity)
+    $("#id_state").on('change', function(e){
+        filterCities(null)
+    })
+})
+</script>
+{% endblock %}

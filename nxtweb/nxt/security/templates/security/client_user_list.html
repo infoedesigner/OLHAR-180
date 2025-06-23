@@ -1,0 +1,90 @@
+{% extends "clients/client_base.html" %}
+
+{% load widget_tweaks security_tags bootstrap5 %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item" aria-current="page">
+    <a href="{% url 'clients:client_list' %}">Clientes</a>
+</li>
+<li class="breadcrumb-item" aria-current="page">
+    <a href="{% url 'clients:client_detail' view.client.pk %}">{{ view.client }}</a>
+</li>
+<li class="breadcrumb-item active" aria-current="page">{{ view.client }} - Usuários</li>
+{% endblock %}
+
+{% block client_main %}
+<div class="row">
+    <div class="col-12">
+        <div class="card border p-0">
+            <div class="card-body">
+                <form action="" method="get">
+                    <div class="form-group">
+                        <div class="input-group">
+                            {% render_field form.q placeholder=form.q.label class="form-control" %}
+                            <span class="input-group-text">
+                                <button type="submit" class="btn btn-primary btn-sm">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                </form>
+                <p style="text-align: right;">
+                    <a href="{% url 'security:client_user_create' view.client.pk %}" class="btn btn-primary">Novo Usuário</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    {% for current_user in object_list %}
+    <div class="col-xl-3 col-sm-6 col-md-6">
+        <div class="card border p-0">
+            <div class="card-header">
+                <h3 class="card-title">{{ current_user.email }}</h3>
+            </div>
+            <div class="card-body text-center">
+                {% if current_user.photo %}
+                <span class="avatar avatar-xxl brround cover-image" data-bs-image-src="{{ current_user.photo.url }}" style="background: url('{{ current_user.photo.url }}') center center;"></span>
+                {% else %}
+                <span class="avatar avatar-xxl brround cover-image" data-bs-image-src="{{ STATIC_URL }}assets/images/users/15.jpg" style="background: url(&quot;{{ STATIC_URL }}assets/images/users/15.jpg&quot;) center center;"></span>
+                {% endif %}
+                <h4 class="h4 mb-0 mt-3">{{ current_user.name }}</h4>
+                <p class="card-text">Último acesso: {{ current_user.last_access|date:'d/m/Y H:i' }}</p>
+            </div>
+            <div class="card-footer text-center">
+                <div class="row user-social-detail">
+                    {% if request.user|check_nxt_permission:'update_user' %}
+                    <div class="social-profile me-4 rounded text-center">
+                        <a href="{% url 'security:client_user_update' view.client.pk current_user.pk %}" data-bs-placement="top" data-bs-toggle="tooltip" title="Editar Usuário">
+                            <i class="fa fa-pencil"></i>
+                        </a>
+                    </div>
+                    {% endif %}
+                    {% if request.user|check_nxt_permission:'deactive_user' %}
+                    <div class="social-profile me-4 rounded text-center">
+                        <a href="" data-bs-placement="top" data-bs-toggle="tooltip" title="Remover Usuário">
+                            <i class="fa fa-trash"></i>
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <p class="alert alert-info text-center">
+                    Nenhum usuário encontrado
+                </p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    <div class="col-12">
+        {% bootstrap_pagination page_obj extra=request.GET.urlencode %}
+    </div>
+</div>
+{% endblock %}

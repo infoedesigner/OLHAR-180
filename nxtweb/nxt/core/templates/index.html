@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+
+{% block page_title %}
+Painel
+{% endblock %}
+
+{% block main %}
+<div class="row">
+    <div class="col-sm-6 col-md-6 col-lg-6 col-xl-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <h6 class=""><span class="text-primary"><i class="fa fa-bank mx-2 fs-20 text-primary-shadow"></i></span>DIÁRIOS OFICIAIS</h6>
+                <h3 class="text-dark counter mt-0 mb-3 number-font">Recortes</h3>
+                <div class="progress h-1 mt-0 mb-2">
+                    <div class="progress-bar progress-bar-striped bg-primary" style="width: 100%;" role="progressbar"></div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col text-center"> <span class="text-muted">Semana</span>
+                        <h4 class="fw-normal mt-2 mb-0 number-font1">{{ view.clipping_data.gazette.week }}</h4>
+                    </div>
+                    <div class="col text-center"> <span class="text-muted">Mês</span>
+                        <h4 class="fw-normal mt-2 mb-0 number-font2">{{ view.clipping_data.gazette.month }}</h4>
+                    </div>
+                    <div class="col text-center"> <span class="text-muted">Total</span>
+                        <h4 class="fw-normal mt-2 mb-0 number-font3">{{ view.clipping_data.gazette.total }}</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-md-6 col-lg-6 col-xl-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <h6 class=""><span class="text-secondary"><i class="fa fa-tv mx-2 fs-20 text-secondary-shadow"></i></span>TV</h6>
+                <h3 class="text-dark counter mt-0 mb-3 number-font">Recortes</h3>
+                <div class="progress h-1 mt-0 mb-2">
+                    <div class="progress-bar progress-bar-striped bg-secondary" style="width: 100%;" role="progressbar"></div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col text-center"> <span class="text-muted">Semana</span>
+                        <h4 class="fw-normal mt-2 mb-0 number-font1">{{ view.clipping_data.tv.week }}</h4>
+                    </div>
+                    <div class="col text-center"> <span class="text-muted">Mês</span>
+                        <h4 class="fw-normal mt-2 mb-0 number-font2">{{ view.clipping_data.tv.month }}</h4>
+                    </div>
+                    <div class="col text-center"> <span class="text-muted">Total</span>
+                        <h4 class="fw-normal mt-2 mb-0 number-font3">{{ view.clipping_data.tv.total }}</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-md-6 col-lg-6 col-xl-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <h6 class=""><span class="text-success"><i class="fe fe-radio mx-2 fs-20 text-success-shadow"></i></span>RÁDIO</h6>
+                <h3 class="text-dark counter mt-0 mb-3 number-font">Recortes</h3>
+                <div class="progress h-1 mt-0 mb-2">
+                    <div class="progress-bar progress-bar-striped bg-success" style="width: 100%;" role="progressbar"></div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col text-center"> <span class="text-muted">Semana</span>
+                        <h4 class="fw-normal mt-2 mb-0 number-font1">{{ view.clipping_data.radio.week }}</h4>
+                    </div>
+                    <div class="col text-center"> <span class="text-muted">Mês</span>
+                        <h4 class="fw-normal mt-2 mb-0 number-font2">{{ view.clipping_data.radio.month }}</h4>
+                    </div>
+                    <div class="col text-center"> <span class="text-muted">Total</span>
+                        <h4 class="fw-normal mt-2 mb-0 number-font3">{{ view.clipping_data.radio.total }}</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-md-6 col-lg-6 col-xl-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <h6 class=""><span class="text-danger"><i class="fa fa-globe mx-2 fs-20 text-danger-shadow"></i></span>SITES</h6>
+                <h3 class="text-dark counter mt-0 mb-3 number-font">Recortes</h3>
+                <div class="progress h-1 mt-0 mb-2">
+                    <div class="progress-bar progress-bar-striped bg-danger" style="width: 100%;" role="progressbar"></div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col text-center"> <span class="text-muted">Semana</span>
+                        <h4 class="fw-normal mt-2 mb-0 number-font1">{{ view.clipping_data.site.week }}</h4>
+                    </div>
+                    <div class="col text-center"> <span class="text-muted">Mês</span>
+                        <h4 class="fw-normal mt-2 mb-0 number-font2">{{ view.clipping_data.site.month }}</h4>
+                    </div>
+                    <div class="col text-center"> <span class="text-muted">Total</span>
+                        <h4 class="fw-normal mt-2 mb-0 number-font3">{{ view.clipping_data.site.total }}</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% comment %}
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Últmos Recortes</h3>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    {{ view.clipping_data.lastest_clippings|json_script:"lastest_clippings" }}
+                    <canvas id="chartLine" class="h-275"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Distribuição dos Recortes</h3>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="chartPie" class="h-275"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endcomment %}
+{% endblock %}
+
+{% block js %}
+<script src="{{ STATIC_URL }}assets/plugins/chart/Chart.bundle.js"></script>
+<script>
+$(function(){
+    let points = JSON.parse(document.getElementById('lastest_clippings').textContent);
+    let ctx = document.getElementById("chartLine").getContext('2d');
+    let dates = []
+    let today = Date()
+    var myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            datasets: [{
+                points
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+
+            scales: {
+                xAxes: [{
+                    ticks: {
+                        fontColor: "#9ba6b5",
+                    },
+                    display: true,
+                    gridLines: {
+                        color: 'rgba(119, 119, 142, 0.2)'
+                    }
+                }],
+                yAxes: [{
+                    ticks: {
+                        fontColor: "#9ba6b5",
+                    },
+                    display: true,
+                    gridLines: {
+                        color: 'rgba(119, 119, 142, 0.2)'
+                    },
+                    scaleLabel: {
+                        display: false,
+                        labelString: 'Thousands',
+                        fontColor: 'rgba(119, 119, 142, 0.2)'
+                    }
+                }]
+            },
+            legend: {
+                labels: {
+                    fontColor: "#9ba6b5"
+                },
+            },
+        }
+    })
+    /* Pie Chart*/
+    var datapie = {
+        labels: ['MG', 'RJ', 'SP', 'PE', 'DF'],
+        datasets: [{
+            data: [20, 20, 30, 5, 25],
+            backgroundColor: ['#6c5ffc', '#05c3fb', '#09ad95', '#1170e4', '#e82646']
+        }]
+    };
+    var optionpie = {
+        maintainAspectRatio: false,
+        responsive: true,
+        legend: {
+            display: false,
+        },
+        animation: {
+            animateScale: true,
+            animateRotate: true
+        }
+    };
+    var ctx6 = document.getElementById('chartPie');
+    var myPieChart6 = new Chart(ctx6, {
+        type: 'pie',
+        data: datapie,
+        options: optionpie
+    });
+})
+</script>
+{% endblock %}

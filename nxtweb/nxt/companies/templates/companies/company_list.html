@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% load widget_tweaks security_tags bootstrap5 %}
+
+{% block page_title %}Empresas{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item active" aria-current="page">Empresas</li>
+{% endblock %}
+
+{% block main %}
+<div class="row">
+    <div class="col-12">
+        <div class="card border p-0">
+            <div class="card-body">
+                <form action="" method="get">
+                    <div class="form-group">
+                        <div class="input-group">
+                            {% render_field form.q placeholder=form.q.label class="form-control" %}
+                            <span class="input-group-text">
+                                <button type="submit" class="btn btn-primary btn-sm">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table border table-striped mb-0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>CNPJ</th>
+                        <th>Razão Social</th>
+                        <th>Nome Fantasia</th>
+                        <th>Municipio</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for company in object_list %}
+                    <tr>
+                        <td>{{ company.pk|safe }}</td>
+                        <td>{{ company.cnpj }}</td>
+                        <td>{{ company.company_name }}</td>
+                        <td>{{ company.brand_name }}</td>
+                        <td>{{ company.city }} / {{ company.state }}</td>
+                        <td>
+                            <a href="{% url 'companies:company_update' company.pk %}" class="btn btn-primary">
+                                <i class="fa fa-pencil"></i>
+                            </a>
+                            <a href="{% url 'companies:document_list' company.pk %}" class="btn btn-success">
+                                <i class="fa fa-file-pdf-o"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <hr>
+        {% bootstrap_pagination page_obj extra=request.GET.urlencode %}
+    </div>
+</div>
+{% endblock %}

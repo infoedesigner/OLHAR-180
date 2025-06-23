@@ -1,0 +1,375 @@
+{% extends "base.html" %}
+
+{% load bootstrap5 %}
+
+{% block page_title %}
+Atendimento - {{ object }}
+{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item" aria-current="page">
+    <a href="{% url 'clients:client_list' %}">Clientes</a>
+</li>
+<li class="breadcrumb-item" aria-current="page">
+    <a href="{% url 'clients:client_detail' object.pk %}">{{ object }}</a>
+</li>
+<li class="breadcrumb-item active" aria-current="page">
+    Atendimento - {{ object }}
+</li>
+{% endblock %}
+
+{% block main %}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Atendimento</h3>
+    </div>
+    <div class="card-body">
+        <p style="text-align: right;">
+            <a data-bs-target="#modalCategory" data-bs-toggle="modal" href="javascript:void(0)" class="btn btn-primary">Adicionar</a>
+        </p>
+        <div class="panel-group1" id="accordion1">
+            {% for category in object.root_categories %}
+            <div class="panel panel-default mb-4">
+                <div class="panel-heading1 ">
+                    <h4 class="panel-title1">
+                        <a class="accordion-toggle collapsed" data-bs-toggle="collapse" data-bs-parent="#accordion" href="#collapse{{ forloop.counter }}" aria-expanded="false" style="font-size: 18px !important;">{{ category }}</a>
+                    </h4>
+                </div>
+                <div id="collapse{{ forloop.counter }}" class="panel-collapse collapse" role="tabpanel" aria-expanded="false">
+                    <div class="panel-body">
+                        <form action="" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="delete_category">
+                            <p style="text-align: right;">
+                                <a href="#" data-category="{{ category.pk|safe }}" class="btn-keyword btn btn-primary">Adicionar Termo</a>
+                                <a href="#modalCategoria{{ category.pk|safe }}" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalCategoria{{ category.pk|safe }}">
+                                    <i class="fa fa-pensil"></i> Editar Categoria
+                                </a>
+                                <button type="submit" name="category" value="{{ category.pk|safe }}" class="btn btn-danger">Remover Categoria</button>
+                            </p>
+                        </form>
+                        <div class="modal fade" id="modalCategoria{{ category.pk|safe }}">
+                            <div class="modal-dialog" role="document">
+                                <form action="" method="post">
+                                    <input type="hidden" name="action" value="update_category" />
+                                    <input type="hidden" name="category" value="{{ category.pk|safe }}" />
+                                    {% csrf_token %}
+                                    <div class="modal-content modal-content-demo">
+                                        <div class="modal-header">
+                                            <h6 class="modal-title">Atualizar Categoria</h6>
+                                            <button aria-label="Close" class="btn-close" data-bs-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                <label for="">Nome da Categoria</label>
+                                                <input type="text" name="name" value="{{ category.name }}" class="form-control" />
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <a href="javascript:void(0)" class="btn btn-default" data-bs-dismiss="modal">Fechar</a>
+                                            <button type="submit" class="btn btn-primary">Salvar Categoria</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <table class="table table-bordered">
+                            <thead>
+                                <th>
+                                    Filtro
+                                </th>
+                                <th>
+                                    Termos
+                                </th>
+                                <th>
+                                    Palavras Negativas
+                                </th>
+                                <th>
+                                    Editar
+                                </th>
+                            </thead>
+                            <tbody>
+                                {% for keyword in category.active_keywords %}
+                                <tr>
+                                    <td>
+                                        {% if keyword.source == 'Todos' %}
+                                        <span class="badge badge-sm bg-primary">TODOS</span>
+                                        {% elif keyword.source == 'Contrato' %}
+                                        <span class="badge badge-sm bg-success">CONTRATO</span>
+                                        {% elif keyword.source == 'Principais' %}
+                                        <span class="badge badge-sm bg-danger">PRINCIPAIS</span>
+                                        {% elif keyword.source == 'Off' %}
+                                        <span class="badge badge-sm bg-default">OFF</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% for positive in keyword.positives.all %}
+                                        <span class="badge badge-sm bg-primary">{{ positive }}</span> {% if not forloop.last %}<i class="fa fa-plus"></i>{% endif %}
+                                        {% endfor %}
+                                    </td>
+                                    <td>
+                                        {% for negative in keyword.negatives.all %}
+                                        <span class="badge badge-sm bg-danger">{{ negative }}</span> {% if not forloop.last %}<i class="fa fa-plus"></i>{% endif %}
+                                        {% endfor %}
+                                    </td>
+                                    <td>
+                                        <a href="javascript:void(0)" class="btnKeyword btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalKeyword{{ keyword.pk|safe }}">
+                                            <i class="fa fa-pencil"></i> Editar
+                                        </a>
+                                        <a href="javascript:void(0)" class="btn-delete-keyword btn btn-danger" data-id="{{ keyword.pk|safe }}">
+                                            <i class="fa fa-trash"></i> Apagar
+                                        </a>
+                        <div class="modal fade" id="modalKeyword{{ keyword.pk|safe }}">
+                            <div class="modal-dialog" role="document">
+                                <form action="" method="post">
+                                    <input type="hidden" name="action" value="update_keyword" />
+                                    <input id="id_keyword" type="hidden" name="id" value="{{ keyword.pk|safe }}" />
+                                    {% csrf_token %}
+                                    <div class="modal-content modal-content-demo">
+                                        <div class="modal-header">
+                                            <h6 class="modal-title">Atualizar Termo</h6>
+                                            <button aria-label="Close" class="btn-close" data-bs-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="form-group">
+                                                <label for="id_keyword_name">Filtro</label>
+                                                <select name="source" id="id_source" class="form-control" required>
+                                                    <option value="Todos"{% if keyword.source == 'Todos' %} selected{% endif %}>TODOS</option>
+                                                    <option value="Contrato"{% if keyword.source == 'Contrato' %} selected{% endif %}>CONTRATO</option>
+                                                    <option value="Principais"{% if keyword.source == 'Principais' %} selected{% endif %}>PRINCIPAIS</option>
+                                                    <option value="Off"{% if keyword.source == 'Off' %} selected{% endif %}>OFF</option>
+                                                </select>
+                                            </div>
+                                            <div class="positive-words">
+                                                <label for="">Termos</label><br />
+                                                {% for positive in keyword.positives.all %}
+                                                <div class="form-group">
+                                                    <div class="input-group">
+                                                        <input type="text" name="positive" class="form-control" placeholder="Termo" value="{{ positive.word }}">
+                                                        <span class="input-group-text">
+                                                            <a href="javascript:void(0)" class="btn btn-primary btn-sm btn-positive-positive">
+                                                                <i class="fa fa-trash"></i>
+                                                            </a>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                {% endfor %}
+                                                <a href="javascript:void(0)" class="btn btn-primary btn-sm addPositiveWord" style="margin-top: 10px;">
+                                                    <i class="fa fa-plus-circle"></i> Adicionar Outro
+                                                </a>
+                                            </div>
+                                            <hr>
+                                            <div id="negative-words">
+                                                <label for="">Palavras Negativas</label><br />
+                                                {% for negative in keyword.negatives.all %}
+                                                <div class="form-group">
+                                                    <div class="input-group">
+                                                        <input type="text" name="negative" class="form-control" placeholder="Palavra Negativada" value="{{ negative.word }}">
+                                                        <span class="input-group-text">
+                                                            <a href="javascript:void(0)" class="btn btn-primary btn-sm btn-delete-negative">
+                                                                <i class="fa fa-trash"></i>
+                                                            </a>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                {% endfor %}
+                                                <a href="javascript:void(0)" class="btn btn-primary btn-sm addNegativeWord" style="margin-top: 10px;">
+                                                    <i class="fa fa-plus-circle"></i> Adicionar Outra
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <a href="javascript:void(0)" class="btn btn-default" data-bs-dismiss="modal">Fechar</a>
+                                            <button type="submit" class="btn btn-primary">Salvar Termo</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modalCategory">
+    <div class="modal-dialog" role="document">
+        <form action="" method="post">
+            <input type="hidden" name="action" value="category" />
+            {% csrf_token %}
+            <div class="modal-content modal-content-demo">
+                <div class="modal-header">
+                    <h6 class="modal-title">Adicionar Categoria</h6>
+                    <button aria-label="Close" class="btn-close" data-bs-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <form action="" method="post">
+                        <div class="form-group">
+                            <label for="id_category_name">Categoria</label>
+                            <!-- Add maxlength attribute -->
+                            <input type="text" name="name" id="id_category_name" maxlength="50" class="form-control" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <a href="javascript:void(0)" class="btn btn-default" data-bs-dismiss="modal">Fechar</a>
+                    <button type="submit" class="btn btn-primary">Salvar Categoria</button>
+                </div>
+            </div>
+        </form>
+        
+    </div>
+</div>
+<div class="modal fade" id="modalKeyword">
+    <div class="modal-dialog" role="document">
+        <form action="" method="post">
+            <input type="hidden" name="action" value="keyword" />
+            <input id="id_category_keyword" type="hidden" name="category" value="" />
+            {% csrf_token %}
+            <div class="modal-content modal-content-demo">
+                <div class="modal-header">
+                    <h6 class="modal-title">Adicionar Termo</h6>
+                    <button aria-label="Close" class="btn-close" data-bs-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <form action="" method="post">
+                        <div class="form-group">
+                            <label for="id_keyword_name">Filtro</label>
+                            <select name="source" id="id_source" class="form-control" required>
+                                <option value="Todos">TODOS</option>
+                                <option value="Contrato">CONTRATO</option>
+                                <option value="Principais">PRINCIPAIS</option>
+                                <option value="Off">OFF</option>
+                            </select>
+                        </div>
+                        <div class="positive-words">
+                            <label for="">Termos</label><br />
+                            {% for positive in keyword.positives.all %}
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <input type="text" name="positive" class="form-control" placeholder="Termo" value="{{ positive.word }}">
+                                    <span class="input-group-text">
+                                        <a href="javascript:void(0)" class="btn btn-primary btn-sm btn-positive-positive">
+                                            <i class="fa fa-trash"></i>
+                                        </a>
+                                    </span>
+                                </div>
+                            </div>
+                            {% endfor %}
+                            <a href="javascript:void(0)" class="btn btn-primary btn-sm addPositiveWord" style="margin-top: 10px;">
+                                <i class="fa fa-plus-circle"></i> Adicionar Outro
+                            </a>
+                        </div>
+                        <hr>
+                        <div id="negative-words">
+                            <label for="">Palavras Negativas</label>
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <input type="text" name="negative" class="form-control" placeholder="Palavra Negativada">
+                                    <span class="input-group-text">
+                                        <a href="javascript:void(0)" class="btn btn-primary btn-sm btn-delete-negative">
+                                            <i class="fa fa-trash"></i>
+                                        </a>
+                                    </span>
+                                </div>
+                            </div>
+                            <a href="javascript:void(0)" class="btn btn-primary btn-sm addNegativeWord" style="margin-top: 10px;">
+                                <i class="fa fa-plus-circle"></i> Adicionar Outra
+                            </a>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <a href="javascript:void(0)" class="btn btn-default" data-bs-dismiss="modal">Fechar</a>
+                    <button type="submit" class="btn btn-primary">Salvar Termo</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="modal fade" id="modalDeleteKeyword">
+    <div class="modal-dialog" role="document">
+        <form action="" method="post">
+            <input type="hidden" name="action" value="delete_keyword" />
+            <input id="id_delete_keyword" type="hidden" name="keyword" value="" />
+            {% csrf_token %}
+            <div class="modal-content modal-content-demo">
+                <div class="modal-header">
+                    <h6 class="modal-title">Remover Termo</h6>
+                    <button aria-label="Close" class="btn-close" data-bs-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <h4>Deseja realmente remover este termo?</h4>
+                </div>
+                <div class="modal-footer">
+                    <a href="javascript:void(0)" class="btn btn-default" data-bs-dismiss="modal">Fechar</a>
+                    <button type="submit" class="btn btn-danger">Remover Termo</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+{% block js %}
+<script>
+$(function(){
+    $(".btn-keyword").on('click', function(e) {
+        e.preventDefault()
+        let keywordModal = new bootstrap.Modal(document.getElementById('modalKeyword'))
+        $("#id_category_keyword").val($(this).data("category"))
+        $("#id_keyword").val("")
+        keywordModal.show()
+    })
+    $(".addNegativeWord").on('click', function(e){
+        e.preventDefault()
+        let input = '<div class="form-group">' +
+                        '<div class="input-group">' +
+                            '<input type="text" name="negative" class="form-control" placeholder="Palavra Negativada" value="{{ negative.word }}">' +
+                            '<span class="input-group-text">' +
+                                '<a href="javascript:void(0)" class="btn btn-primary btn-sm btn-positive-negative">' +
+                                    '<i class="fa fa-trash"></i>' +
+                                '</a>' +
+                            '</span>' +
+                        '</div>' +
+                    '</div>'
+        $(this).before(input)
+    })
+    $(".btn-delete-negative").on('click', function(e){
+        e.preventDefault()
+        $(this).closest('.form-group').remove()
+    })
+    $(".addPositiveWord").on('click', function(e){
+        e.preventDefault()
+        let input = '<div class="form-group">' +
+                        '<div class="input-group">' +
+                            '<input type="text" name="positive" class="form-control" placeholder="Termo" value="">' +
+                            '<span class="input-group-text">' +
+                                '<a href="javascript:void(0)" class="btn btn-primary btn-sm btn-positive-positive">' +
+                                    '<i class="fa fa-trash"></i>' +
+                                '</a>' +
+                            '</span>' +
+                        '</div>' +
+                    '</div>'
+        $(this).before(input)
+    })
+    $(".modal").on('click', '.btn-positive-positive', function(e) {
+        $(this).closest(".form-group").remove()
+    })
+    $(".btn-delete-positive").on('click', function(e){
+        e.preventDefault()
+        $(this).closest('.form-group').remove()
+    })
+    $(".btn-delete-keyword").on("click", function(e){
+        e.preventDefault()
+        $("#id_delete_keyword").val($(this).data("id"))
+        $("#modalDeleteKeyword").modal('show')
+    })
+})
+</script>
+{% endblock %}

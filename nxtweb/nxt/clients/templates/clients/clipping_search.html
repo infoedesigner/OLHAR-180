@@ -1,0 +1,532 @@
+{% extends "base.html" %}
+
+{% load clients_tags bootstrap5 %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item active" aria-current="page">
+    Recortes {{ view.date|date:'d/m/Y'|default:'Mais recentes' }}
+</li>
+{% endblock %}
+
+{% block page_title %}
+Recortes {{ view.date|date:'d/m/Y'|default:'Mais recentes' }}
+{% endblock %}
+
+{% block js %}
+<script defer>
+//////City filter logic:
+    $(function(){
+        $("#id_sources").select2({
+            placeholder: 'Selecione os Veículos'
+        })
+        $("#id_categories").select2({
+            placeholder: 'Selecione as Categorias'
+        })
+        $("#id_state").select2( {
+            placeholder: 'Selecione a UF'
+        })
+        $("#id_city").select2({
+            placeholder: 'Selecione o Município'
+        })
+        $("#id_rating").select2()
+        $("#id_mention").select2()
+        $("#id_evaluation").select2()
+        let city_url = '{% url "api:city-list" %}'
+        function filterCities(currentValue) {
+            let state = $("#id_state").val()
+            let cities = "<option value=''>---------</option>"
+            if(state) {
+                axios({
+                    method: 'GET',
+                    url: city_url + `?state=${state}`,
+                    responseType: 'json'
+                }).then(res => {
+                    for (let index = 0; index < res.data.length; index++) {
+                        const city = res.data[index];
+                        const option = `<option value="${city.id}">${city.name}</option>`
+                        cities = cities + option
+                    }
+                    $("#id_city").html(cities)
+                    if(currentValue != null) {
+                        $("#id_city").val(currentValue)
+                    }
+                    $("#id_city").trigger('change')
+                })
+            } else {
+                $("#id_city").html(cities)
+                $("#id_city").trigger('change')
+            }
+        }
+        let currentCity = $("#id_city").val()
+        filterCities(currentCity)
+        $("#id_state").on('change', function(e){
+            filterCities(null)
+        })
+        $(function(){
+            $("#id_start_date").bootstrapdatepicker({
+                language: 'pt-BR',
+                todayHighlight: true,
+                orientation: 'bottom',
+                format: 'dd/mm/yyyy',
+                autoclose: true
+            })
+            $("#id_end_date").bootstrapdatepicker({
+                language: 'pt-BR',
+                todayHighlight: true,
+                orientation: 'bottom',
+                format: 'dd/mm/yyyy',
+                autoclose: true
+            })
+        })
+    })
+//////End of city filter logic
+
+//////Dropbox function logic:
+    let selectedCheckboxes = 0;
+
+    $('#dropbox').on('change', function() {
+        var selection = $(this).val();
+        var checkboxes = $("input[type='checkbox'][name='clipping']");
+
+        // First, uncheck all checkboxes
+        checkboxes.prop('checked', false);
+
+        // Then, check the appropriate checkboxes based on the selection
+        switch(selection) {
+            case 'all_search':
+                // Select all checkboxes
+                checkboxes.prop('checked', true);
+                break;
+            case 'first_50':
+                checkboxes.slice(0, 50).prop('checked', true);
+                break;
+            case 'first_100':
+                checkboxes.slice(0, 100).prop('checked', true);
+                break;
+            case 'last_50':
+                checkboxes.slice(-50).prop('checked', true);
+                break;
+            case 'last_100':
+                checkboxes.slice(-100).prop('checked', true);
+                break;
+        }
+    });
+    $("#selectAll").on('change', function(e){
+        let checked = $(this).prop('checked');
+        let start = (currentPage - 1) * itemsPerPage;
+        let end = start + itemsPerPage;
+    
+        // Get the checkboxes on the current page
+        let currentPageCheckboxes = $("[name='clipping']").slice(start, end);
+    
+        // Check or uncheck the checkboxes on the current page
+        currentPageCheckboxes.prop("checked", checked);
+    
+        // If the "Select All" checkbox is checked
+        if (checked) {
+            // Add the number of checkboxes on the current page to the total selected checkboxes count
+            selectedCheckboxes += currentPageCheckboxes.length;
+        } else {
+            // Subtract the number of checkboxes on the current page from the total selected checkboxes count
+            selectedCheckboxes -= currentPageCheckboxes.filter(":checked").length;
+        }
+    
+        // Update the display of the total selected checkboxes count
+        updateSelectedCheckboxesDisplay();
+    });
+    function updateSelectedCheckboxesDisplay() {
+        // Assuming you have an element with the id 'selectedCheckboxesDisplay'
+        $('#selectedCheckboxesDisplay').text(selectedCheckboxes);
+    }
+    
+//////End of dropbox function logic
+
+//////Pagination logic and functions:
+    let currentPage = 1;
+    let itemsPerPage = 50;
+    let items = $('.news_item'); 
+    let maxPages = Math.ceil(items.length / itemsPerPage);
+
+    //Calculates what page user is on:
+    function showPage(page) {
+        // Reset the dropdown selection
+        $('#dropbox').val('');
+    
+        // Uncheck the "Select All" checkbox
+        $("#selectAll").prop('checked', false);
+
+        // Uncheck the "Select All" checkbox
+        $("#selectAll").prop('checked', false);
+        
+        if (page < 1 || page > maxPages) {
+            return;
+        }
+
+        let start = (page - 1) * itemsPerPage;
+        let end = start + itemsPerPage;
+
+        items.hide();
+        items.slice(start, end).show();
+        // Uncheck the "Select All" checkbox
+        $("#selectAll").prop('checked', false);
+
+        // Get the checkboxes on the current page
+        let currentPageCheckboxes = items.slice(start, end).find("input[type='checkbox'][name='clipping']");
+
+        // Add a listener to these checkboxes
+        currentPageCheckboxes.change(function() {
+            // Check if all checkboxes on the current page are checked
+            let allChecked = currentPageCheckboxes.length === currentPageCheckboxes.filter(":checked").length;
+
+            // Set the "Select All" checkbox to the result
+            $("#selectAll").prop('checked', allChecked);
+        });
+    }
+    //Dynamically generates page numbers
+    $(document).ready(function() {
+        for (let i = 1; i <= maxPages; i++) {
+            let btn = document.createElement('button'); 
+            btn.innerText = i;
+            btn.className = 'page-btn';
+            btn.onclick = function(event) {
+                event.preventDefault();
+                currentPage = i;
+                showPage(i);
+                updateButtonStyles();
+            };
+            document.getElementById('page-numbers').appendChild(btn);
+        }
+
+        showPage(currentPage);
+        updateButtonStyles();
+
+        $('#next').click(function() {
+            // Reset the dropdown selection
+            $('#dropbox').val('');
+        
+            // Uncheck the "Select All" checkbox
+            $("#selectAll").prop('checked', false);
+            
+            if (currentPage < maxPages) {
+                currentPage++;
+                showPage(currentPage);
+                updateButtonStyles();
+            }
+        });
+
+        $('#prev').click(function() {
+            // Reset the dropdown selection
+            $('#dropbox').val('');
+        
+            // Uncheck the "Select All" checkbox
+            $("#selectAll").prop('checked', false);
+        
+            if (currentPage > 1) {
+                currentPage--;
+                showPage(currentPage);
+                updateButtonStyles();
+            }
+        });
+    });
+    //Dynamically updates button styles according to which page user is on
+    function updateButtonStyles() {
+        // disable/enable the prev button
+        if (currentPage === 1) {
+            $('#prev').prop('disabled', true);
+            $('#prev').css('background-color', '#999999');
+        } else {
+            $('#prev').prop('disabled', false);
+            $('#prev').css('background-color', '#6C5FFC');
+        }
+    
+        // disable/enable the next button
+        if (currentPage === maxPages) {
+            $('#next').prop('disabled', true);
+            $('#next').css('background-color', '#999999');
+        } else {
+            $('#next').prop('disabled', false);
+            $('#next').css('background-color', '#6C5FFC');
+        }
+    
+        // enable all page buttons
+        $(".page-btn").prop('disabled', false);
+        $(".page-btn").css('background-color', '#6C5FFC');
+    
+        // disable and gray out the current page button
+        $(".page-btn").eq(currentPage - 1).css('background-color', '#999999');
+        $(".page-btn").eq(currentPage - 1).prop('disabled', true);
+    }
+    showPage(currentPage);
+    updateButtonStyles();
+    
+    btn.onclick = function(event) {
+        // Reset the dropdown selection
+        $('#dropbox').val('');
+
+        // Uncheck the "Select All" checkbox
+        $("#selectAll").prop('checked', false);
+        // Uncheck the "Select All" checkbox
+        $("#selectAll").prop('checked', false);
+        // Prevent the default action
+        event.preventDefault();
+    
+        currentPage = i;
+        showPage(i);
+        updateButtonStyles();
+    };
+//////End of pagination logic and functions
+
+{% comment %} //////Modal logic:
+$(document).ready(function(){
+    var modal = document.getElementById("myModal");
+    var btn = document.getElementById("showSelected");
+    var span = document.getElementsByClassName("close")[0];
+
+    btn.onclick = function() {
+        var checkboxes = $("input[type='checkbox'][name='clipping']:checked");
+        var selectedItems = '';
+        checkboxes.each(function() {
+        selectedItems += $(this).val() + '<br>'; 
+        });
+        document.getElementById('selectedItems').innerHTML = selectedItems;
+        modal.style.display = "block";
+    }
+
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
+
+    window.onclick = function(event) {
+        if (event.target == modal) {
+        modal.style.display = "none";
+        }
+    }
+});
+//////End of modal logic {% endcomment %}
+
+</script>
+{% endblock %}
+
+{% block main %}
+<head>
+    <style>
+    .modal {
+        display: none; 
+        position: fixed;
+        z-index: 1; 
+        padding-top: 100px;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%; 
+        overflow: auto; 
+        background-color: rgb(0,0,0);
+        background-color: rgba(0,0,0,0.4); 
+    }
+    
+    .modal-content {
+        background-color: #fefefe;
+        margin: auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+    }
+    
+    .close {
+        color: #aaaaaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+    
+    .close:hover,
+    .close:focus {
+        color: #000;
+        text-decoration: none;
+        cursor: pointer;
+    }
+    
+    
+    #selectionForm select {
+        text-align-last:center;
+        background-color: #6C5FFC;
+        color: #FFFFFF;
+        border: none;
+        border-radius: 5px;
+        padding: 5px 10px;
+        margin: 5px;
+        font-size: 14px;
+        cursor: pointer;
+        outline: none;
+        -webkit-appearance: none; 
+        -moz-appearance: none;    
+        appearance: none;         
+    }
+
+
+    #selectionForm select::-ms-expand {
+        display: none;
+    }
+
+    #selectionForm select {
+        position: relative;
+    }
+
+    #selectionForm select:after {
+        content: "v";
+        font-size: 20px;
+        right: 10px;
+        top: 8px;
+        position: absolute;
+        pointer-events: none;
+        z-index: 2;
+    }
+
+    .pagi-btn:not(:disabled):hover, .page-btn:not(:disabled):hover {
+        background-color: #5846D6; /* Slightly darker background on hover */
+    }
+    .pagi-btn:not(:disabled):active, .page-btn:not(:disabled):active {
+        background-color: #4334A1; /* Even darker background when clicking */
+    }
+    
+
+    .pagi-btn, .page-btn {
+        border-radius: 50px; /* Rounded edges */
+        background-color: #6C5FFC; /* Background color */
+        color: white; /* Text color */
+        margin: 5px; /* Space between buttons */
+        border: none; /* Remove default button border */
+        padding: 5px 10px; /* Some padding */
+        cursor: pointer; /* Change cursor to pointer on hover */
+        font-size: 14px; /* Font size of the button */
+        transition: all 0.3s ease; /* Smooth transition for hover effect */
+    }
+    .pagi-btn:hover, .page-btn:hover {
+        background-color: #5846D6; /* Slightly darker background on hover */
+    }
+    .pagi-btn:active, .page-btn:active {
+        background-color: #4334A1; /* Even darker background when clicking */
+    }
+    #pagination {
+        display: flex; /* Align buttons on the same row */
+        justify-content: center; /* Center the buttons */
+        margin-top: 20px; /* Add some space on top */
+    }
+    </style>
+</head>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <form action="" method="get">
+                    <div class="row">
+                        <div class="col-md-6">
+                            {% bootstrap_field form.q placeholder="Pesquisar no título ou texto" %}
+                        </div>
+                        <div class="col-md-6">
+                            {% bootstrap_field form.categories %}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            {% bootstrap_field form.source_type %}
+                            {% bootstrap_field form.state %}
+                            {% bootstrap_field form.city %}
+                            {% bootstrap_field form.sources %}
+                            {% bootstrap_field form.start_date %}
+                        </div>
+                        <div class="col-md-6">
+                            {% bootstrap_field form.author %}
+                            {% bootstrap_field form.evaluation %}
+                            {% bootstrap_field form.mention %}
+                            {% bootstrap_field form.rating %}
+                            {% bootstrap_field form.end_date %}
+                        </div>
+                    </div>
+                    <p style="text-align: right;">
+                        <button name="show" value="true" type="submit" class="btn btn-primary">Pesquisar</button>
+                    </p>
+                </form>
+                {% if request.GET.show %}
+                <form method="get" id="selectionForm">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="excel">
+                    <p style="text-align: right;">
+                        <button type="submit" class="btn btn-success">Exportar Excel</button>
+                    </p>
+
+                    <select id="dropbox" name="selection" onchange="handleSelectionChange(event)">
+                        <option value="" selected disabled>Selecione uma opção</option>
+                        <option value="all_search">Todas dessa pesquisa</option>
+                        <option value="first_50">As primeiras 50</option>
+                        <option value="first_100">As primeiras 100</option>
+                        <option value="last_50">As últimas 50</option>
+                        <option value="last_100">As últimas 100</option>
+                    </select>
+
+                    {% comment %} <button type="button" id="showSelected">Show Selected</button>
+
+                    <div id="myModal" class="modal">
+                        <div class="modal-content">
+                            <span class="close">&times;</span>
+                            <p id="selectedItems"></p>
+                        </div>
+                    </div> {% endcomment %}
+
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <input type="checkbox" id="selectAll">
+                                    </th>                                    
+                                    <th>Título</th>
+                                    <th>Veículo</th>
+                                    <th>Data publicação</th>
+                                    <th>Data do Clipping</th>
+                                    <th>Categoria</th>
+                                    <th>Link do Clipping</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for clipping in object_list %}
+                                <tr class="news_item">
+                                    <td>
+                                        <input type="checkbox" name="clipping" value="{{ clipping.pk|safe }}">
+                                    </td>
+                                    <td>{{ clipping.source.media }}</td>
+                                    <td>{{ clipping.source.media.source }}</td>
+                                    <td>{{ clipping.source.media.publish_date|date:'d/m/Y H:i' }}</td>
+                                    <td>{{ clipping.created|date:'d/m/Y H:i' }}</td>
+                                    <td>{{ clipping.category }}</td>
+                                    <td>
+                                        <a target="_blank" href="{% url 'clients:clipping_detail' view.client.slug clipping.pk %}">Link</a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="7">
+                                        <p class="alert alert-info">
+                                            Nenhum recorte encontrado!
+                                        </p>
+                                    </td>
+                                </tr>
+                                {% endfor %}        
+                            </tbody>
+                        </table>
+                        <div id="pagination">
+                            <button type='button' class='pagi-btn' id='prev'>prev</button>
+                            <span id="page-numbers"></span>
+                            <button type='button' class='pagi-btn' id='next'>next</button>
+                        </div>
+                    </div>
+                </form>
+                <hr>
+                {% comment %} {% bootstrap_pagination page_obj extra=request.GET.urlencode %} {% endcomment %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

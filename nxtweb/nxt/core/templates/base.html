@@ -1,0 +1,470 @@
+<!doctype html>
+{% load bootstrap5 security_tags widget_tweaks %}
+<html lang="en">
+<head>
+    <!-- META DATA -->
+    <meta charset="UTF-8">
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, user-scalable=0'>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- FAVICON -->
+    <link rel="shortcut icon" type="image/x-icon" href="{{ STATIC_URL }}images/nxt_logo2.jpg" />
+
+    <!-- TITLE -->
+    <title>AGÊNCIA NXT</title>
+
+    <!-- BOOTSTRAP CSS -->
+    <link id="style" href="{{ STATIC_URL }}assets/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- STYLE CSS -->
+    <link href="{{ STATIC_URL }}assets/css/style.css" rel="stylesheet" />
+    <link href="{{ STATIC_URL }}assets/css/dark-style.css" rel="stylesheet" />
+    <link href="{{ STATIC_URL }}assets/css/transparent-style.css" rel="stylesheet">
+    <link href="{{ STATIC_URL }}assets/css/skin-modes.css" rel="stylesheet" />
+
+    <!--- FONT-ICONS CSS -->
+    <link href="{{ STATIC_URL }}assets/css/icons.css" rel="stylesheet" />
+
+    <!-- COLOR SKIN CSS -->
+    <link id="theme" rel="stylesheet" type="text/css" media="all" href="{{ STATIC_URL }}assets/colors/color1.css" />
+    <style>
+        .top-bar-menu{
+            list-style: none;
+            margin-left: 5em;
+        }
+        .active-top-menu {
+            background-color: #6C5FFC;
+            border-radius: 5px;
+            padding: 5px;
+            color: #fff;
+        }
+
+        .side-header {
+            height: 68px !important;
+        }
+        .side-header img {
+            max-height: 60px !important;
+        }
+        @media (min-width: 768px) {
+            .sidebar-mini .app-sidebar {
+                width: 330px;
+            }
+            .side-header {
+                width: 330px;
+            }
+            .app-header {
+                padding-left: 345px;
+            }
+            .app-content {
+                margin-left: 330px;
+            }
+        }
+    </style>
+    {% block head %}
+    {% endblock %}
+
+</head>
+
+<body class="app sidebar-mini ltr light-mode">
+
+    <!-- PAGE -->
+    <div class="page">
+        <div class="page-main">
+
+            <!-- app-Header -->
+            <div class="app-header header sticky">
+                <div class="container-fluid main-container">
+                    <div class="d-flex">
+                        <a aria-label="Hide Sidebar" class="app-sidebar__toggle" data-bs-toggle="sidebar" href="javascript:void(0)"></a>
+                        <!-- sidebar-toggle-->
+                        <a class="logo-horizontal " href="{% url 'core:index' %}">
+                            <img src="{{ STATIC_URL }}images/nxt_logo2.jpg" class="header-brand-img desktop-logo" alt="logo">
+                            <img src="{{ STATIC_URL }}images/nxt_logo2.jpg" class="header-brand-img light-logo1" alt="logo">
+                        </a>
+
+                        <!-- TOP BAR MENU ITEMS -->
+                        {% if view.is_client %}
+                                <li class="top-bar-menu">
+                                    <a id="menu-home" class="has-link" href="{% url 'clients:clipping_list' view.client.slug %}">
+                                        <i class="fa fa-home"></i><span class="side-menu__label">
+                                            Página Inicial
+                                        </span></a>
+                                </li>
+                                <li class="top-bar-menu">
+                                    <a id="menu-recortes-dia" class="has-link" href="{% url 'clients:clipping_daily' view.client.slug %}">
+                                        <i class="fa fa-calendar"></i><span class="side-menu__label">
+                                            Recortes do Dia
+                                        </span>
+                                    </a>
+                                </li>
+                                <li class="top-bar-menu">
+                                    <a id="menu-diariooficial" class="has-link" href="{% url 'clients:clipping_list' view.client.slug %}?date={{ request.GET.date|default:'' }}&source_type=diariooficial">
+                                        <i class="side-menu__icon fa fa-bank"></i><span class="side-menu__label">
+                                            Diários Oficiais
+                                        </span>
+                                    </a>
+                                </li>
+                                <li class="top-bar-menu">
+                                    <a id="menu-tv" class="has-link" href="{% url 'clients:clipping_list' view.client.slug %}?date={{ request.GET.date|default:'' }}&source_type=tv">
+                                        <i class="side-menu__icon fa fa-tv"></i><span class="side-menu__label">
+                                            TV
+                                        </span>
+                                    </a>
+                                </li>
+                                <li class="top-bar-menu">
+                                    <a id="menu-radio" class="has-link" href="{% url 'clients:clipping_list' view.client.slug %}?date={{ request.GET.date|default:'' }}&source_type=radio">
+                                        <i class="side-menu__icon fe fe-radio"></i><span class="side-menu__label">
+                                            Rádio
+                                        </span>
+                                    </a>
+                                </li>
+                                <li class="top-bar-menu">
+                                    <a id="menu-site" class="has-link" href="{% url 'clients:clipping_list' view.client.slug %}?date={{ request.GET.date|default:'' }}&source_type=site">
+                                        <i class="fa fa-globe"></i><span class="side-menu__label">
+                                            Sites
+                                        </span>
+                                    </a>
+                                </li>
+                                
+                                <!-- Script for highlighting active menu -->
+                                <script defer>
+                                    function highlightActiveMenuItem() {
+                                        const sourceType = new URLSearchParams(window.location.search).get('source_type');
+                                        let activeMenuId = 'menu-home';
+                                
+                                        if (sourceType === 'diariooficial') {
+                                            activeMenuId = 'menu-diariooficial';
+                                        } else if (sourceType === 'tv') {
+                                            activeMenuId = 'menu-tv';
+                                        } else if (sourceType === 'radio') {
+                                            activeMenuId = 'menu-radio';
+                                        } else if (sourceType === 'site') {
+                                            activeMenuId = 'menu-site';
+                                        } else if (window.location.pathname.includes('daily')) {
+                                            activeMenuId = 'menu-recortes-dia';
+                                        }
+                                
+                                        document.getElementById(activeMenuId).classList.add('active-top-menu');
+                                    }
+                                
+                                    highlightActiveMenuItem();
+                                </script>
+                            {% endif %}
+
+                        <!-- LOGO -->
+                        <div class="d-flex order-lg-2 ms-auto header-right-icons">
+                            <!-- SEARCH -->
+                            <button class="navbar-toggler navresponsive-toggler d-lg-none ms-auto" type="button"
+                                data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent-4"
+                                aria-controls="navbarSupportedContent-4" aria-expanded="false"
+                                aria-label="Toggle navigation">
+                                <span class="navbar-toggler-icon fe fe-more-vertical"></span>
+                            </button>
+                            <div class="navbar navbar-collapse responsive-navbar p-0">
+                                <div class="collapse navbar-collapse" id="navbarSupportedContent-4">
+                                    <div class="d-flex order-lg-2">
+                                        <!-- SIDE-MENU -->
+                                        <div class="dropdown d-flex profile-1">
+                                            <a href="javascript:void(0)" data-bs-toggle="dropdown" class="nav-link leading-none d-flex">
+                                                <img src="{{ STATIC_URL }}assets/images/users/21.jpg" alt="profile-user"
+                                                    class="avatar profile-user brround cover-image">
+                                            </a>
+                                            <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                                                <div class="drop-heading">
+                                                    <div class="text-center">
+                                                        <h5 class="text-dark mb-0 fs-14 fw-semibold">{{ user }}</h5>
+                                                    </div>
+                                                </div>
+                                                <div class="dropdown-divider m-0"></div>
+                                                <a class="dropdown-item" href="{% url 'security:update_me' %}">
+                                                    <i class="dropdown-icon fe fe-user"></i> Editar Dados
+                                                </a>
+                                                <a class="dropdown-item" href="{% url 'security:password_change' %}">
+                                                    <i class="dropdown-icon fe fe-lock"></i> Alterar Senha
+                                                </a>
+                                                <a class="dropdown-item" href="{% url 'security:logout' %}">
+                                                    <i class="dropdown-icon fe fe-alert-circle"></i> Sair
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /app-Header -->
+
+            <!--APP-SIDEBAR-->
+            <div class="sticky">
+                <div class="app-sidebar__overlay" data-bs-toggle="sidebar"></div>
+                <div class="app-sidebar">
+                    <div class="side-header">
+                        <a class="header-brand1" href="{% url 'core:index' %}">
+                            <img src="{{ STATIC_URL }}images/nxt_logo2.jpg" class="header-brand-img desktop-logo" alt="logo">
+                            <img src="{{ STATIC_URL }}images/nxt_logo2.jpg" class="header-brand-img toggle-logo" alt="logo">
+                            <img src="{{ STATIC_URL }}images/nxt_logo2.jpg" class="header-brand-img light-logo" alt="logo">
+                            <img src="{{ STATIC_URL }}images/nxt_logo2.jpg" class="header-brand-img light-logo1" alt="logo">
+                        </a>
+                        <!-- LOGO -->
+                    </div>
+                    <div class="main-sidemenu">
+                        <div class="slide-left disabled" id="slide-left"><svg xmlns="http://www.w3.org/2000/svg" fill="#7b8191" width="24" height="24" viewBox="0 0 24 24"><path d="M13.293 6.293 7.586 12l5.707 5.707 1.414-1.414L10.414 12l4.293-4.293z"/></svg></div>
+                        <ul class="side-menu">
+                            <li class="sub-category">
+                                <h3>Início</h3>
+                            </li>
+                            {% if view.is_client %}
+                                    <a class="side-menu__item has-link" data-bs-toggle="slide" href="{% url 'clients:clipping_search' view.client.slug %}"><i class="side-menu__icon fa fa-search"></i><span class="side-menu__label">Pesquisa Avançada</span></a>
+                                </li>
+                                {% if request.user.profile != 'cliente' %}
+                                    <li class="slide">
+                                        <a class="side-menu__item has-link" data-bs-toggle="slide" href="{% url 'core:index' %}"><i class="side-menu__icon fa fa-cogs"></i><span class="side-menu__label">Administração</span></a>
+                                    </li>
+                                {% endif %}
+                            {% else %}
+                            {% if request.user.profile == 'funcionario' or request.user.profile == 'administrador' %}
+                            <li class="slide">
+                                <a class="side-menu__item has-link" data-bs-toggle="slide" href="{% url 'core:index' %}"><i class="side-menu__icon fe fe-home"></i><span class="side-menu__label">Painel</span></a>
+                            </li>
+                            {% if request.user|check_nxt_permission:'view_client' %}
+                            <li class="sub-category">
+                                <h3>Clientes</h3>
+                            </li>
+                            <li class="slide">
+                                <a class="side-menu__item" data-bs-toggle="slide" href="javascript:void(0)">
+                                    <i class="side-menu__icon fa fa-user-circle-o"></i>
+                                    <span class="side-menu__label">Gestão de Clientes</span>
+                                    <i class="angle fe fe-chevron-right"></i>
+                                </a>
+                                <ul class="slide-menu">
+                                    <li class="side-menu-label1">
+                                        <a href="javascript:void(0)">Clientes</a>
+                                    </li>
+                                    <li>
+                                        <a href="{% url 'clients:client_list' %}" class="slide-item">Portfólio</a>
+                                    </li>
+                                    {% if request.user|check_nxt_permission:'create_client' %}
+                                    <li>
+                                        <a href="{% url 'clients:client_create' %}" class="slide-item">Novo Cliente</a>
+                                    </li>
+                                    {% endif %}
+                                </ul>
+                            </li>
+                            {% endif %}
+                            <li class="sub-category">
+                                <h3>Configurações</h3>
+                            </li>
+                            {% if request.user|check_nxt_permission:'view_user' %}
+                            <li class="slide">
+                                <a class="side-menu__item" data-bs-toggle="slide" href="javascript:void(0)">
+                                    <i class="side-menu__icon fe fe-users"></i>
+                                    <span class="side-menu__label">Gestão de Colaboradores</span>
+                                    <i class="angle fe fe-chevron-right"></i>
+                                </a>
+                                <ul class="slide-menu">
+                                    <li class="side-menu-label1">
+                                        <a href="javascript:void(0)">Colaboradores</a>
+                                    </li>
+                                    <li>
+                                        <a href="{% url 'security:user_list' %}" class="slide-item">Colaboradores</a>
+                                    </li>
+                                    {% if request.user|check_nxt_permission:'create_user' %}
+                                    <li>
+                                        <a href="{% url 'security:user_create' %}" class="slide-item">Novo Colaborador</a>
+                                    </li>
+                                    {% endif %}
+                                </ul>
+                            </li>
+                            {% endif %}
+                            {% if request.user|check_nxt_permission:'view_source' %}
+                            <li class="slide">
+                                <a class="side-menu__item" data-bs-toggle="slide" href="javascript:void(0)">
+                                    <i class="side-menu__icon fe fe-globe"></i>
+                                    <span class="side-menu__label">Gestão de Veículos</span>
+                                    <i class="angle fe fe-chevron-right"></i>
+                                </a>
+                                <ul class="slide-menu">
+                                    <li class="side-menu-label1">
+                                        <a href="javascript:void(0)">Veículos</a>
+                                    </li>
+                                    <li>
+                                        <a href="{% url 'media:source_list' %}" class="slide-item">Veículos</a>
+                                    </li>
+                                    {% if request.user|check_nxt_permission:'create_source' %}
+                                    <li>
+                                        <a href="{% url 'media:source_create' %}" class="slide-item">Novo Veículo</a>
+                                    </li>
+                                    {% endif %}
+                                </ul>
+                            </li>
+                            {% endif %}
+                            {% if request.user|check_nxt_permission:'view_news' %}
+                            <li class="slide">
+                                <a class="side-menu__item" data-bs-toggle="slide" href="javascript:void(0)">
+                                    <i class="side-menu__icon fa fa-newspaper-o"></i>
+                                    <span class="side-menu__label">Gestão de Notícias</span>
+                                    <i class="angle fe fe-chevron-right"></i>
+                                </a>
+                                <ul class="slide-menu">
+                                    <li class="side-menu-label1">
+                                        <a href="javascript:void(0)">Notícias</a>
+                                    </li>
+                                    <li>
+                                        <a href="{% url 'media:news_list' %}" class="slide-item">Notícias</a>
+                                    </li>
+                                    <li>
+                                        <a href="{% url 'media:newspaper_list' %}" class="slide-item">Impressos</a>
+                                    </li>
+                                    {% if request.user|check_nxt_permission:'create_news' %}
+                                    <li>
+                                        <a href="{% url 'media:news_create' %}" class="slide-item">Nova Notícia</a>
+                                    </li>
+                                    {% endif %}
+                                </ul>
+                            </li>
+                            {% endif %}
+                            {% endif %}
+                            {% if user.is_staff %}
+                            <li class="slide">
+                                <a class="side-menu__item" data-bs-toggle="slide" href="javascript:void(0)">
+                                    <i class="side-menu__icon fa fa-building"></i>
+                                    <span class="side-menu__label">Gestão de Empresas</span>
+                                    <i class="angle fe fe-chevron-right"></i>
+                                </a>
+                                <ul class="slide-menu">
+                                    <li class="side-menu-label1">
+                                        <a href="javascript:void(0)">Empresas</a>
+                                    </li>
+                                    <li>
+                                        <a href="{% url 'companies:company_list' %}" class="slide-item">Empresas</a>
+                                    </li>
+                                    <li>
+                                        <a href="{% url 'companies:company_create' %}" class="slide-item">Nova Empresa</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            {% endif %}
+                            {% if user.is_staff %}
+                            <li class="sub-category">
+                                <h3>Empresas</h3>
+                            </li>
+                            <li class="slide" style="padding: 10px;">
+                                <form id="user-company-form" action="{% url 'security:user_company_update' %}" method="post">
+                                    {% csrf_token %}
+                                    {% render_field company_form.company class="form-control form-select" %}
+                                </form>
+                            </li>
+                            {% endif %}
+                            {% endif %}
+                            <li class="slide">
+                                <a class="side-menu__item has-link" data-bs-toggle="slide" href="{% url 'security:logout' %}"><i class="side-menu__icon fe fe-alert-circle"></i><span class="side-menu__label">Sair</span></a>
+                            </li>
+                        </ul>
+                        <div class="slide-right" id="slide-right"><svg xmlns="http://www.w3.org/2000/svg" fill="#7b8191" width="24" height="24" viewBox="0 0 24 24"><path d="M10.707 17.707 16.414 12l-5.707-5.707-1.414 1.414L13.586 12l-4.293 4.293z"/></svg></div>
+                    </div>
+                </div>
+                <!--/APP-SIDEBAR-->
+            </div>
+
+            <!--app-content open-->
+            <div class="main-content app-content mt-0">
+                <div class="side-app">
+
+                    <!-- CONTAINER -->
+                    <div class="main-container container-fluid">
+
+                        <!-- PAGE-HEADER -->
+                        <div class="page-header">
+                            <h1 class="page-title">{% block page_title %}{% endblock %}</h1>
+                            <div>
+                                <ol class="breadcrumb">
+                                    <li class="breadcrumb-item"><a href="{% url 'core:index' %}">Início</a></li>
+                                    {% block breadcrumb %}
+                                    <li class="breadcrumb-item active" aria-current="page">Painel</li>
+                                    {% endblock %}
+                                </ol>
+                            </div>
+                        </div>
+                        <!-- PAGE-HEADER END -->
+
+                        <!-- ROW-1 OPEN -->
+                        <!-- Row -->
+                        <div class="row ">
+                            <div class="col-md-12">
+                                {% bootstrap_messages %}
+                                {% block main %}
+                                {% endblock %}
+                            </div>
+                        </div>
+                        <!-- /Row -->
+                    </div>
+                    <!-- CONTAINER CLOSED -->
+                </div>
+            </div>
+            <!--app-content closed-->
+        </div>
+
+        <!-- FOOTER -->
+        <footer class="footer">
+            <div class="container">
+                <div class="row align-items-center flex-row-reverse">
+                    <div class="col-md-12 col-sm-12 text-center">
+                        © <span id="year"></span> NXT. Todos os direitos reservados
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- FOOTER CLOSED -->
+    </div>
+
+    <!-- BACK-TO-TOP -->
+    <a href="#top" id="back-to-top"><i class="fa fa-angle-up"></i></a>
+
+    <!-- JQUERY JS -->
+    <script src="{{ STATIC_URL }}assets/js/jquery.min.js"></script>
+
+    <!-- BOOTSTRAP JS -->
+    <script src="{{ STATIC_URL }}assets/plugins/bootstrap/js/popper.min.js"></script>
+    <script src="{{ STATIC_URL }}assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+
+    <!-- SIDE-MENU JS -->
+    <script src="{{ STATIC_URL }}assets/plugins/sidemenu/sidemenu.js"></script>
+
+    <!-- SIDEBAR JS -->
+    <script src="{{ STATIC_URL }}assets/plugins/sidebar/sidebar.js"></script>
+
+    <!-- Color Theme js -->
+    <script src="{{ STATIC_URL }}assets/js/themeColors.js"></script>
+
+    <!-- Sticky js -->
+    <script src="{{ STATIC_URL }}assets/js/sticky.js"></script>
+
+    <script src="{{ STATIC_URL }}assets/plugins/bootstrap-daterangepicker/moment.min.js"></script>
+
+    <!-- INTERNAL Bootstrap-Datepicker js-->
+    <script src="{{ STATIC_URL }}assets/plugins/bootstrap-datepicker/bootstrap-datepicker.js"></script>
+
+    <script src="{{ STATIC_URL }}/assets/plugins/select2/select2.full.min.js"></script>
+    <script src="{{ STATIC_URL }}/assets/js/select2.js"></script>
+
+    <!-- CUSTOM JS -->
+    <script src="{{ STATIC_URL }}assets/js/custom1.js"></script>
+
+    <!-- Switcher js -->
+    <script src="{{ STATIC_URL }}assets/plugins/input-mask/jquery.mask.min.js"></script>
+
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <script>
+        axios.defaults.xsrfCookieName = 'csrftoken'
+        axios.defaults.xsrfHeaderName = "X-CSRFTOKEN"
+        $("#user-company-form select").on('change', function(e){
+            $(this).closest("form").submit()
+        })
+    </script>
+    {% block js %}{% endblock %}
+</body>
+
+</html>

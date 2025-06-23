@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% load bootstrap5 %}
+
+{% block page_title %}
+{{ object|default:'Adicionar Documento' }}
+{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item" aria-current="page">
+    <a href="{% url 'companies:document_list' view.company.pk %}">Documentos</a>
+</li>
+<li class="breadcrumb-item active" aria-current="page">
+    {{ object|default:'Adicionar Documento' }}
+</li>
+{% endblock %}
+
+{% block main %}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">{{ object|default:'Adicionar Documento' }}</h3>
+    </div>
+    <div class="card-body">
+        <form action="" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row">
+                {% for field in form %}
+                <div class="col-md-4">
+                    {% bootstrap_field field %}
+                </div>
+                {% endfor %}
+            </div>
+            <hr>
+            <p style="text-align: right;">
+                <a href="{% url 'companies:document_list' view.company.pk %}" class="btn btn-default">Voltar</a>
+                <button type="submit" class="btn btn-primary">Salvar</button>
+            </p>
+        </form>
+    </div>
+</div>
+{% endblock %}
+{% block js %}
+<script>
+$(function(){
+    $("#id_start_date").bootstrapdatepicker({
+        language: 'pt-BR',
+        todayHighlight: true,
+        orientation: 'bottom',
+        format: 'dd/mm/yyyy',
+        autoclose: true
+    })
+    $("#id_end_date").bootstrapdatepicker({
+        language: 'pt-BR',
+        todayHighlight: true,
+        orientation: 'bottom',
+        format: 'dd/mm/yyyy',
+        autoclose: true
+    })
+    $("#id_reference_date").bootstrapdatepicker({
+        language: 'pt-BR',
+        todayHighlight: true,
+        orientation: 'bottom',
+        format: 'dd/mm/yyyy',
+        autoclose: true
+    })
+})
+</script>
+{% endblock %}

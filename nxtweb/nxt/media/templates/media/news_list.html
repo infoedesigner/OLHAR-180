@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% load widget_tweaks security_tags bootstrap5 %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item active" aria-current="page">Notícias</li>
+{% endblock %}
+
+{% block main %}
+<div class="row">
+    <div class="col-12">
+        <div class="card border p-0">
+            <div class="card-body">
+                <form action="" method="get">
+                    <div class="row">
+                        {% for field in form %}
+                        <div class="col-md-3">
+                            {% bootstrap_field field %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <hr>
+                    <p style="text-align: right;">
+                        <button class="btn btn-primary" type="submit">
+                            <i class="fa fa-search"></i> Pesquisar
+                        </button>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Notícias</h3>
+    </div>
+    <div class="card-body">
+        <p style="text-align: right;">
+            <a href="{% url 'media:news_create' %}" class="btn btn-primary">Nova Notícia</a>
+        </p>
+        <div class="table-responsive">
+            <table class="table border table-striped mb-0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th style="width: 25%;">Título</th>
+                        <th>Veículo</th>
+                        <th>Data publicação</th>
+                        <th>Última modificação</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for media in object_list %}
+                    <tr>
+                        <td>{{ media.pk|safe }}</td>
+                        <td>{{ media.title }}</td>
+                        <td>{{ media.source }}</td>
+                        <td>{{ media.publish_date|date:'d/m/Y' }}</td>
+                        <td>{{ media.modified|date:'d/m/Y H:i' }}</td>
+                        <td>
+                            <a href="{% url 'media:news_update' media.pk %}" class="btn btn-primary">
+                                <i class="fa fa-pencil"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <hr>
+        {% bootstrap_pagination page_obj extra=request.GET.urlencode %}
+    </div>
+</div>
+{% endblock %}
+{% block js %}
+<script>
+$(function(){
+    $("#id_start_date").bootstrapdatepicker({
+        language: 'pt-BR',
+        todayHighlight: true,
+        orientation: 'bottom',
+        format: 'dd/mm/yyyy',
+        autoclose: true
+    })
+    $("#id_end_date").bootstrapdatepicker({
+        language: 'pt-BR',
+        todayHighlight: true,
+        orientation: 'bottom',
+        format: 'dd/mm/yyyy',
+        autoclose: true
+    })
+    $("#id_source").select2()
+})
+</script>
+{% endblock %}

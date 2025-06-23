@@ -1,0 +1,64 @@
+{% extends "clients/client_base.html" %}
+
+{% load bootstrap5 widget_tweaks %}
+
+{% block page_title %}
+{{ object }} Wiki
+{% endblock %}
+
+{% block head %}
+<link href="{{ STATIC_URL }}assets/css/multi-select.css" rel="stylesheet" />
+<style>
+.ms-container {
+    width: 100%;
+}
+</style>
+{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item" aria-current="page">
+    <a href="{% url 'clients:client_list' %}">Clientes</a>
+</li>
+<li class="breadcrumb-item active" aria-current="page">
+    {{ object }} Wiki
+</li>
+{% endblock %}
+
+{% block client_contract_class %} class="active"{% endblock %}
+
+{% block client_main %}
+<div class="card">
+    <div class="card-header">
+        <div class="float-start">
+            <h3 class="card-title">Selecione os Veículos do Contrato</h3>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="card-body">
+        <form action="" method="post">
+            {% csrf_token %}
+            {% render_field form.sources_contract %}
+            <hr />
+            <p style="text-align: right;">
+                <a href="{% url 'clients:client_detail' object.pk %}" class="btn btn-default">Voltar</a>
+                <button type="submit" class="btn btn-primary">Salvar</button>
+            </p>
+        </form>
+    </div>
+</div>
+{% endblock %}
+{% block js %}
+<!-- MULTI SELECT JS-->
+<script src="{{ STATIC_URL }}assets/js/jquery.multi-select.js"></script>
+<script>
+$(function(){
+    // SELECT BOX
+    $('#id_sources_contract').multiSelect({
+        selectableHeader: 'Todos os Veículos',
+        selectionHeader: 'Veículos Contratados',
+        filter: true,
+		multiple: true
+    });
+})
+</script>
+{% endblock %}

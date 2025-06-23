@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% load bootstrap5 %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item active" aria-current="page">Editorias</li>
+{% endblock %}
+
+{% block main %}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Editorias</h3>
+    </div>
+    <div class="card-body">
+        <p style="text-align: right;">
+            <a href="{% url 'media:editorial_create' view.source.pk %}" class="btn btn-primary">Nova Editoria</a>
+        </p>
+        <div class="table-responsive">
+            <table class="table border text-nowrap text-md-nowrap table-striped mb-0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Valor publicitário</th>
+                        <th>Última modificação</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for editorial in object_list %}
+                    <tr>
+                        <td>{{ editorial.pk|safe }}</td>
+                        <td>{{ editorial.name }}</td>
+                        <td>{{ editorial.marketing_value|floatformat:'2' }}</td>
+                        <td>{{ editorial.modified|date:'d/m/Y H:i' }}</td>
+                        <td>
+                            <a href="{% url 'media:editorial_update' editorial.pk %}" class="btn btn-primary" data-bs-placement="top" data-bs-toggle="tooltip-primary" title="Editar Editoria">
+                                <i class="fa fa-pencil"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <hr>
+        {% bootstrap_pagination page_obj extra=request.GET.urlencode %}
+    </div>
+</div>
+{% endblock %}

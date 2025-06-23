@@ -1,0 +1,108 @@
+{% extends "clients/client_base.html" %}
+
+{% load bootstrap5 widget_tweaks %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item" aria-current="page">
+    <a href="{% url 'clients:client_detail' view.client.pk %}">{{ client }}</a>
+</li>
+<li class="breadcrumb-item" aria-current="page">
+    <a href="{% url 'newsletter:newsletter_list' view.client.pk %}">Newsletters</a>
+</li>
+<li class="breadcrumb-item active" aria-current="page">
+    {{ object }} - Layout
+</li>
+{% endblock %}
+
+{% block page_title %}
+{{ object }} - Layout
+{% endblock %}
+
+{% block client_newsletters_class %} class="active"{% endblock %}
+
+{% block client_main %}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">{{ object }} - Layout</h3>
+    </div>
+    <div class="card-body">
+        <form action="" method="post">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-6">
+                    {% bootstrap_field form.segmentation %}
+                    {% bootstrap_field form.news_layout %}
+                    {% bootstrap_field form.newsletter_layout %}
+                </div>
+                <div class="col-md-6 layout-fields">
+                    {% bootstrap_field form.document_style_active %}
+                    <div class="form-group">
+                        {% render_field form.document_style class="form-control" %}
+                    </div>
+                    {% bootstrap_field form.general_style_active %}
+                    <div class="form-group">
+                        {% render_field form.general_style class="form-control" %}
+                    </div>
+                    {% bootstrap_field form.header_style_active %}
+                    <div class="form-group">
+                        {% render_field form.header_style class="form-control" %}
+                    </div>
+                    {% bootstrap_field form.footer_style_active %}
+                    <div class="form-group">
+                        {% render_field form.footer_style class="form-control" %}
+                    </div>
+                    {% bootstrap_field form.title_style_active %}
+                    <div class="form-group">
+                        {% render_field form.title_style class="form-control" %}
+                    </div>
+                    {% bootstrap_field form.media_style_active %}
+                    <div class="form-group">
+                        {% render_field form.media_style class="form-control" %}
+                    </div>
+                    {% bootstrap_field form.link_style_active %}
+                    <div class="form-group">
+                        {% render_field form.link_style class="form-control" %}
+                    </div>
+                    {% bootstrap_field form.resume_style_active %}
+                    <div class="form-group">
+                        {% render_field form.resume_style class="form-control" %}
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <p style="text-align: right;">
+                <a href="{% url 'newsletter:newsletter_list' view.client.pk %}" class="btn btn-default">Voltar</a>
+                <button type="submit" class="btn btn-primary">Salvar</button>
+            </p>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+$(function(){
+    function checkActive(field) {
+        let active = $(`#id_${field}_active`).prop("checked")
+        if(active) {
+            $(`#id_${field}`).closest("div").show()
+        } else {
+            $(`#id_${field}`).closest("div").hide()
+        }
+    }
+    $(".layout-fields input[type=checkbox]").on('change', function(e){
+        let name = $(this).prop('name')
+        let field = name.replace("_active", "")
+        checkActive(field)
+    })
+    checkActive('document_style')
+    checkActive('general_style')
+    checkActive('header_style')
+    checkActive('footer_style')
+    checkActive('title_style')
+    checkActive('media_style')
+    checkActive('link_style')
+    checkActive('resume_style')
+})
+</script>
+{% endblock %}

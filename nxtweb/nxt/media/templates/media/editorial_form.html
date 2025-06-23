@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% load bootstrap5 %}
+
+{% block page_title %}
+{{ object|default:'Adicionar Editoria' }}
+{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item" aria-current="page">
+    <a href="{% url 'media:news_list' %}">Editorias</a>
+</li>
+<li class="breadcrumb-item active" aria-current="page">
+    {{ object|default:'Adicionar Editoria' }}
+</li>
+{% endblock %}
+
+{% block main %}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">{{ object|default:'Adicionar Editoria' }}</h3>
+    </div>
+    <div class="card-body">
+        <form action="" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-4">
+                    {% bootstrap_field form.name %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.marketing_value %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.frequency %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.url %}
+                </div>
+            </div>
+            <div {% if form.source.source_type != 'site' %}style="display: none;"{% endif %}>
+                <h3>Configuração de Caminhos</h3>
+                {% bootstrap_field form.use_configuration_source %}
+                <div class="row" id="paths" style="display: none;">
+                    <div class="col-md-4">
+                        {% bootstrap_field form.url_xpath %}
+                    </div>
+                    <div class="col-md-4">
+                        {% bootstrap_field form.title_xpath %}
+                    </div>
+                    <div class="col-md-4">
+                        {% bootstrap_field form.headline_xpath %}
+                    </div>
+                    <div class="col-md-4">
+                        {% bootstrap_field form.date_xpath %}
+                    </div>
+                    <div class="col-md-4">
+                        {% bootstrap_field form.date_format %}
+                    </div>
+                    <div class="col-md-4">
+                        {% bootstrap_field form.author_xpath %}
+                    </div>
+                    <div class="col-md-4">
+                        {% bootstrap_field form.text_xpath %}
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <p style="text-align: right;">
+                <a href="{% url 'media:editorial_list' view.source.pk %}" class="btn btn-default">Voltar</a>
+                <button type="submit" class="btn btn-primary">Salvar</button>
+            </p>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+$(function(){
+    function check_use_configuration_source() {
+        let checked = $('#id_use_configuration_source').prop("checked")
+        if(checked) {
+            $("#paths").hide()
+        } else {
+            $("#paths").show()
+        }
+    }
+    $("#id_use_configuration_source").on('change', function(e){
+        check_use_configuration_source()
+    })
+})
+</script>
+{% endblock %}

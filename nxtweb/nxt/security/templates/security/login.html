@@ -1,0 +1,121 @@
+<!doctype html>
+{% load bootstrap5 %}
+<html lang="en" dir="ltr">
+<head>
+    <!-- META DATA -->
+    <meta charset="UTF-8">
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, user-scalable=0'>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <!-- FAVICON -->
+    <link rel="shortcut icon" type="image/x-icon" href="{{ STATIC_URL }}assets/images/brand/favicon.ico" />
+
+    <!-- TITLE -->
+    <title>{% block title %}AGÊNCIA NXT - Acessar o Sistema{% endblock %}</title>
+
+    <!-- BOOTSTRAP CSS -->
+    <link id="style" href="{{ STATIC_URL }}assets/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- STYLE CSS -->
+    <link href="{{ STATIC_URL }}assets/css/style.css" rel="stylesheet" />
+    <link href="{{ STATIC_URL }}assets/css/dark-style.css" rel="stylesheet" />
+    <link href="{{ STATIC_URL }}assets/css/transparent-style.css" rel="stylesheet">
+    <link href="{{ STATIC_URL }}assets/css/skin-modes.css" rel="stylesheet" />
+
+    <!--- FONT-ICONS CSS -->
+    <link href="{{ STATIC_URL }}assets/css/icons.css" rel="stylesheet" />
+
+    <!-- COLOR SKIN CSS -->
+    <link id="theme" rel="stylesheet" type="text/css" media="all" href="{{ STATIC_URL }}assets/colors/color1.css" />
+
+</head>
+
+<body class="app sidebar-mini ltr login-img">
+
+    <!-- BACKGROUND-IMAGE -->
+    <div class="">
+        <!-- PAGE -->
+        <div class="page">
+            <div class="">
+
+                <div class="container-login100">
+                    <div class="wrap-login100 p-6" style="width: 400px !important;">
+                        {% block form %}
+                        <form class="login100-form validate-form" method="post">
+                            <p class="text-center">
+                                <img src="{{ STATIC_URL }}images/nxt_logo.jpg" class="header-brand-img" alt="">
+                            </p>
+                            {% csrf_token %}
+                            <span class="login100-form-title pb-5">
+                                Acessar o Sistema
+                            </span>
+                            <div class="panel panel-primary">
+                                <div class="panel-body tabs-menu-body p-0 pt-5">
+                                    {% bootstrap_messages %}
+                                    {% for error in form.non_field_errors %}
+                                    <p class="alert alert-danger">
+                                        {{ error }}
+                                    </p>
+                                    {% endfor %}
+                                    <div class="tab-content">
+                                        <div class="tab-pane active" id="tab5">
+                                            <div class="wrap-input100 validate-input input-group">
+                                                <span class="input-group-text bg-white text-muted">
+                                                    <i class="zmdi zmdi-email text-muted" aria-hidden="true"></i>
+                                                </span>
+                                                <input class="input100 border-start-0 form-control ms-0" type="email" placeholder="E-mail" name="username" required>
+                                            </div>
+                                            <div class="wrap-input100 validate-input input-group" id="Password-toggle">
+                                                <span class="input-group-text bg-white text-muted">
+                                                    <i class="zmdi zmdi-eye text-muted" aria-hidden="true"></i>
+                                                </span>
+                                                <input class="input100 border-start-0 form-control ms-0" type="password" placeholder="Senha" name="password" required>
+                                            </div>
+                                            <div class="text-end pt-4">
+                                                <p class="mb-0"><a href="{% url 'security:reset_password' %}" class="text-primary ms-1">Esqueceu a senha?</a></p>
+                                            </div>
+                                            <div class="container-login100-form-btn">
+                                                <button type="submit" class="login100-form-btn btn-primary">
+                                                    Entrar
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </form>
+                        {% endblock %}
+                    </div>
+                </div>
+                <!-- CONTAINER CLOSED -->
+            </div>
+        </div>
+        <!-- End PAGE -->
+
+    </div>
+    <!-- BACKGROUND-IMAGE CLOSED -->
+
+    <!-- JQUERY JS -->
+    <script src="{{ STATIC_URL }}assets/js/jquery.min.js"></script>
+
+    <!-- BOOTSTRAP JS -->
+    <script src="{{ STATIC_URL }}assets/plugins/bootstrap/js/popper.min.js"></script>
+    <script src="{{ STATIC_URL }}assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+
+    <!-- SHOW PASSWORD JS -->
+    <script src="{{ STATIC_URL }}assets/js/show-password.min.js"></script>
+
+    <!-- GENERATE OTP JS -->
+    <script src="{{ STATIC_URL }}assets/js/generate-otp.js"></script>
+
+    <!-- Perfect SCROLLBAR JS-->
+    <script src="{{ STATIC_URL }}assets/plugins/p-scroll/perfect-scrollbar.js"></script>
+
+    <!-- Color Theme js -->
+    <script src="{{ STATIC_URL }}assets/js/themeColors.js"></script>
+
+    <!-- CUSTOM JS -->
+    <script src="{{ STATIC_URL }}assets/js/custom.js"></script>
+</body>
+</html>

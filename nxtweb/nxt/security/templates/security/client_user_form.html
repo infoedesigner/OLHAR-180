@@ -1,0 +1,62 @@
+{% extends "clients/client_base.html" %}
+
+{% load bootstrap5 %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item" aria-current="page">
+    <a href="{% url 'clients:client_detail' view.client.pk %}">{{ view.client }}</a>
+</li>
+<li class="breadcrumb-item active" aria-current="page">
+    {{ view.client }} - Usuários
+</li>
+{% endblock %}
+
+{% block page_title %}
+{{ object|default:'Adicionar Usuário' }}
+{% endblock %}
+
+{% block client_main %}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">{{ object|default:'Adicionar Usuário' }}</h3>
+    </div>
+    <div class="card-body">
+        <form action="" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row">
+                {% for field in form %}
+                <div class="col-md-4">
+                    {% bootstrap_field field %}
+                </div>
+                {% endfor %}
+            </div>
+            <hr>
+            <p style="text-align: right;">
+                <a href="{% url 'security:client_user_list' view.client.pk %}" class="btn btn-default">Voltar</a>
+                <button type="submit" class="btn btn-primary">Salvar</button>
+            </p>
+        </form>
+    </div>
+</div>
+{% endblock %}
+{% block js %}
+<script>
+$(function(){
+    var MaskBehavior = function (val) {
+        return val.replace(/\D/g, '').length === 15 ? '(00)00000-0000' : '(00)00000-0009'
+    }
+    var spOptions = {
+        onKeyPress: function (val, e, field, options) {
+            field.mask(MaskBehavior.apply({}, arguments), options)
+        }
+    }
+    $('#id_phone').mask(MaskBehavior, spOptions)
+    $("#id_expiration").bootstrapdatepicker({
+        language: 'pt-BR',
+        todayHighlight: true,
+        format: 'dd/mm/yyyy',
+        autoclose: true
+    })
+})
+</script>
+{% endblock %}

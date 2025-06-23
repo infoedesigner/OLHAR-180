@@ -1,0 +1,127 @@
+{% extends "clients/client_base.html" %}
+
+{% block client_detail_class %} class="active"{% endblock %}
+
+{% block client_main %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card panel-theme">
+            <div class="card-header">
+                <div class="float-start">
+                    <h3 class="card-title">Dados Básicos</h3>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="card-body no-padding">
+                <ul class="list-group no-margin">
+                    <li class="list-group-item d-flex ps-3">
+                        <div class="social social-profile-buttons me-2">
+                            <a class="social-icon text-primary" href="mailto:{{ object.email }}"><i class="fe fe-mail"></i></a>
+                        </div>
+                        <a href="mailto:{{ object.email }}" class="my-auto">{{ object.email }}</a>
+                    </li>
+                    <li class="list-group-item d-flex ps-3">
+                        <div class="social social-profile-buttons me-2">
+                            <a class="social-icon text-primary" href="tel:{{ object.phone }}"><i class="fa fa-fax"></i></a>
+                        </div>
+                        <a href="tel:{{ object.phone }}" class="my-auto">{{ object.phone|default:'--' }}</a>
+                    </li>
+                    <li class="list-group-item d-flex ps-3">
+                        <div class="social social-profile-buttons me-2">
+                            <a class="social-icon text-primary" href="tel:{{ object.cell }}"><i class="fe fe-phone"></i></a>
+                        </div>
+                        <a href="tel:{{ object.cell }}" class="my-auto">{{ object.cell|default:'--' }}</a>
+                    </li>
+                    <li class="list-group-item d-flex ps-3">
+                        <div class="social social-profile-buttons me-2">
+                            <span class="social-icon text-primary"><i class="fa fa-id-card"></i></span>
+                        </div>
+                        <span class="my-auto">{{ object.cnpj_cpf|default:'--' }}</span>
+                    </li>
+                    <li class="list-group-item d-flex ps-3">
+                        <div class="social social-profile-buttons me-2">
+                            <span class="social-icon text-primary"><i class="fa fa-map"></i></span>
+                        </div>
+                        <span class="my-auto">{{ object.full_address }}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="card panel-theme">
+            <div class="card-header">
+                <div class="float-start">
+                    <h3 class="card-title">Categorias Monitoradas</h3>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="card-body no-padding">
+                <ul class="list-group">
+                    {% for category in object.categories.all %}
+                    <li class="listunorder">{{ category }}</li>
+                    {% empty %}
+                    <li class="listunorder">Nenhuma categoria cadastrada</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Recortes</div>
+            </div>
+            <div class="card-body mt-0">
+                <div class="chats-wrap media-list">
+                    <div class="chat-details mb-1 p-3">
+                        <h4 class="mb-0">
+                            <span class="h5 fw-normal">Diário Oficial</span>
+                            <span class="float-end p-1  btn btn-sm text-default"><b>{{ view.clipping_gazette }}</b>%</span>
+                        </h4>
+                        <div class="progress progress-sm mt-3">
+                            <div class="progress-bar bg-primary" style="width: {{ view.clipping_gazette }}%;"></div>
+                        </div>
+                    </div>
+                    <div class="chat-details mb-1 p-3">
+                        <h4 class="mb-0">
+                            <span class="h5 fw-normal">TV</span>
+                            <span class="float-end p-1  btn btn-sm text-default"><b>{{ view.clipping_tv }}</b>%</span>
+                        </h4>
+                        <div class="progress progress-sm mt-3">
+                            <div class="progress-bar bg-secondary" style="width: {{ view.tv }}%;"></div>
+                        </div>
+                    </div>
+                    <div class="chat-details mb-1 p-3">
+                        <h4 class="mb-0">
+                            <span class="h5 fw-normal">Rádio</span>
+                            <span class="float-end p-1  btn btn-sm text-default"><b>{{ view.clipping_radio }}</b>%</span>
+                        </h4>
+                        <div class="progress progress-sm mt-3">
+                            <div class="progress-bar bg-success" style="width: {{ view.clipping_radio }}%;"></div>
+                        </div>
+                    </div>
+                    <div class="chat-details mb-1 p-3">
+                        <h4 class="mb-0">
+                            <span class="h5 fw-normal">Site</span>
+                            <span class="float-end p-1  btn btn-sm text-default"><b>{{ view.clipping_site }}</b>%</span>
+                        </h4>
+                        <div class="progress progress-sm mt-3">
+                            <div class="progress-bar bg-danger" style="width: {{ view.clipping_site }}%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card panel-theme">
+            <div class="card-header">
+                <div class="float-start">
+                    <h3 class="card-title">Dossiê</h3>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="card-body no-padding">
+                {{ object.observations|safe }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

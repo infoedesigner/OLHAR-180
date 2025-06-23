@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% load bootstrap5 %}
+
+{% block page_title %}
+{{ object|default:'Adicionar Veículo' }}
+{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item" aria-current="page">
+    <a href="{% url 'media:source_list' %}">Veículos</a>
+</li>
+<li class="breadcrumb-item active" aria-current="page">
+    {{ object|default:'Adicionar Veículo' }}
+</li>
+{% endblock %}
+
+{% block main %}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">{{ object|default:'Adicionar Veículo' }}</h3>
+    </div>
+    <div class="card-body">
+        <form action="" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-4">
+                    {% bootstrap_field form.name %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.source_type %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.priority %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.marketing_value %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.state %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.city %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.website %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.frequency %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.audience %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.publish_days %}
+                </div>
+            </div>
+            <div class="row" id="paths">
+                <div class="col-12">
+                    <h3>Configuração do Site (Últimas Notícias)</h3>
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.url_root %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.url_xpath %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.title_xpath %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.headline_xpath %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.date_xpath %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.date_format %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.author_xpath %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.text_xpath %}
+                </div>
+            </div>
+            <hr>
+            <p style="text-align: right;">
+                <a href="{% url 'media:source_list' %}" class="btn btn-default">Voltar</a>
+                <button type="submit" class="btn btn-primary">Salvar</button>
+            </p>
+        </form>
+    </div>
+</div>
+{% endblock %}
+{% block js %}
+<script>
+$(function(){
+    function check_source_type() {
+        let source_type = $('#id_source_type').val()
+        if(source_type == 'site') {
+            $("#paths").show()
+        } else {
+            $("#paths").hide()
+        }
+    }
+    check_source_type()
+    $("#id_source_type").on('change', function(e){
+        check_source_type()
+    })
+    $("#id_frequency").on('change', function(e){
+        let value = $(this).val()
+        if(value == 'Diário') {
+            $("[name='publish_days']").prop('checked', true)
+        }
+    })
+    $("#id_state").select2()
+    $("#id_city").select2()
+    $("#id_marketing_value").mask('000.000.000.000.000,00', {reverse: true})
+    let city_url = '{% url "api:city-list" %}'
+    function filterCities(currentValue) {
+        let state = $("#id_state").val()
+        let cities = "<option value=''>---------</option>"
+        if(state) {
+            axios({
+                method: 'GET',
+                url: city_url + `?state=${state}`,
+                responseType: 'json'
+            }).then(res => {
+                for (let index = 0; index < res.data.length; index++) {
+                    const city = res.data[index];
+                    const option = `<option value="${city.id}">${city.name}</option>`
+                    cities = cities + option
+                }
+                $("#id_city").html(cities)
+                if(currentValue != null) {
+                    $("#id_city").val(currentValue)
+                }
+                $("#id_city").trigger('change')
+            })
+        } else {
+            $("#id_city").html(cities)
+            $("#id_city").trigger('change')
+        }
+    }
+    let currentCity = $("#id_city").val()
+    filterCities(currentCity)
+    $("#id_state").on('change', function(e){
+        filterCities(null)
+    })
+})
+</script>
+{% endblock %}

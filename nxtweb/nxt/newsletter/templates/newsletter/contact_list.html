@@ -1,0 +1,88 @@
+{% extends "clients/client_base.html" %}
+
+{% load bootstrap5 widget_tweaks %}
+
+{% block page_title %}
+Contatos
+{% endblock %}
+
+{% block client_contacts_class %} class="active"{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item" aria-current="page">
+    <a href="{% url 'clients:client_detail' client.pk %}"></a>
+</li>
+<li class="breadcrumb-item active" aria-current="page">Contatos</li>
+{% endblock %}
+
+{% block client_main %}
+<div class="row">
+    <div class="col-12">
+        <div class="card border p-0">
+            <div class="card-body">
+                <form action="" method="get">
+                    <div class="form-group">
+                        <div class="input-group">
+                            {% render_field form.q placeholder=form.q.label class="form-control" %}
+                            <span class="input-group-text">
+                                <button type="submit" class="btn btn-primary btn-sm">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Contatos</h3>
+    </div>
+    <div class="card-body">
+        <p style="text-align: right;">
+            <a href="{% url 'newsletter:contact_create' client.pk %}" class="btn btn-primary">Novo Contato</a>
+            <a href="{% url 'newsletter:contact_import' client.pk %}" class="btn btn-success">Importar Contatos</a>
+        </p>
+        <div class="table-responsive">
+            <table class="table border text-nowrap text-md-nowrap table-striped mb-0">
+                <thead>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>E-mail</th>
+                            <th>Nome</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for contact in object_list %}
+                        <tr>
+                            <td>{{ contact.pk|safe }}</td>
+                            <td>{{ contact.email }}</td>
+                            <td>{{ contact.name }}</td>
+                            <td>
+                                <a href="{% url 'newsletter:contact_update' client.pk contact.pk %}" class="btn btn-primary">
+                                    <i class="fa fa-pencil"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5">
+                                <p class="alert alert-info">
+                                    Nenhum contato encontrado
+                                </p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </thead>
+            </table>
+        </div>
+        <hr>
+        {% bootstrap_pagination page_obj extra=request.GET.urlencode %}
+    </div>
+</div>
+{% endblock %}

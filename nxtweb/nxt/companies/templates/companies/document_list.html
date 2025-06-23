@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% load widget_tweaks security_tags bootstrap5 %}
+
+{% block page_title %}Documents{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item active" aria-current="page">Documents</li>
+{% endblock %}
+
+{% block main %}
+<div class="row">
+    <div class="col-12">
+        <div class="card border p-0">
+            <div class="card-body">
+                <form action="" method="get">
+                    <div class="form-group">
+                        <div class="input-group">
+                            {% render_field form.q placeholder=form.q.label class="form-control" %}
+                            <span class="input-group-text">
+                                <button type="submit" class="btn btn-primary btn-sm">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                </form>
+                <p style="text-align: right;">
+                    <a href="{% url 'companies:document_create' view.company.pk %}" class="btn btn-primary">Novo Documento</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table border table-striped mb-0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Título</th>
+                        <th>Tipo do Documento</th>
+                        <th>Data/hora</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for document in object_list %}
+                    <tr>
+                        <td>{{ document.pk|safe }}</td>
+                        <td>{{ document.title }}</td>
+                        <td>{{ document.document_type }}</td>
+                        <td>{{ document.created|date:'d/m/Y H:i' }}</td>
+                        <td>
+                            <a href="{% url 'companies:document_update' view.company.pk document.pk %}" class="btn btn-primary">
+                                <i class="fa fa-pencil"></i>
+                            </a>
+                            <a target="_blank" href="{{ document.document_file.url }}" class="btn btn-success">
+                                <i class="fa fa-download"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5">
+                            <p class="alert alert-info">
+                                Nenhum documento encontrado
+                            </p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <hr>
+        {% bootstrap_pagination page_obj extra=request.GET.urlencode %}
+    </div>
+</div>
+{% endblock %}

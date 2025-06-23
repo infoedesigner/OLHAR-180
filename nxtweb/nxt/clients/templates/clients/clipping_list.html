@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% url "clients:clipping_list" slug=view.client.slug %}
+
+{% load clients_tags bootstrap5 %}
+
+{% block head %}
+<style>
+#datepicker-client {
+    width: 100%;
+}
+#datepicker-client table {
+    width: 100%;
+}
+</style>
+{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item active" aria-current="page">
+    Recortes {{ view.date|date:'d/m/Y'|default:'Mais recentes' }}
+</li>
+{% endblock %}
+
+{% block page_title %}
+Recortes {{ view.date|date:'d/m/Y'|default:'Mais recentes' }}
+{% endblock %}
+
+{% block main %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <ul class="notification">
+                            {% for clipping in object_list %}
+                            <li>
+                                <div class="notification-time">
+                                    <span class="date">{{ clipping.source.media.publish_date|date:'l' }}</span>
+                                </div>
+                                <div class="notification-icon">
+                                    <a href="javascript:void(0);"></a>
+                                </div>
+                                <div class="notification-time-date mb-2 d-block d-md-none">
+                                    <span class="date">{{ clipping.source.media.publish_date|date:'l' }}</span>
+                                    <span class="time ms-2">{{ clipping.source.media.publish_date|date:'H:i' }}</span>
+                                </div>
+                                <div class="notification-body">
+                                    <div class="media mt-0">
+                                        <div class="media-body ms-3 d-flex">
+                                            <div class="">
+                                                <p class="text-dark fw-bold mb-0">
+                                                    <a href="{% url 'clients:clipping_detail' view.client.slug clipping.pk %}">
+                                                        {{ clipping.source.media }}
+                                                    </a>
+                                                </p>
+                                                <p class="mb-0 text-dark">{{ clipping.text|mark_keyword:clipping.keyword_used|safe }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            {% empty %}
+                            <p class="alert alert-info">
+                                Nenhum recorte encontrado!
+                            </p>
+                            {% endfor %}
+                        </ul>
+                        <hr>
+                        {% bootstrap_pagination page_obj extra=request.GET.urlencode %}
+                    </div>
+                    <div class="col-md-4">
+                        <div id="datepicker-client" style="float: right;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+$(function(){
+    let currentDate = '{{ request.GET.date|default:"" }}'
+    if(currentDate == '') {
+        currentDate = moment()
+    } else {
+        currentDate = moment(currentDate, 'YYYY-MM-DD')
+    }
+    currentDate = currentDate.format('DD/MM/YYYY')
+    $("#datepicker-client").bootstrapdatepicker({
+        language: 'pt-BR',
+        endDate: Date(),
+        format: 'dd/mm/yyyy',
+        defaultViewDate: currentDate,
+        autoclose: true,
+        beforeShowDay: function( date ) {
+            const dateFormat = moment(date, 'DD/MM/YYYY').format('DD/MM/YYYY')
+            if(dateFormat == currentDate) {
+                return 'today'
+            } else {
+                return undefined
+            }
+        }
+    }).on("changeDate", function(e){
+        let date = e.format(0,"yyyy-mm-dd")
+        let url = `{% url "clients:clipping_list" view.client.slug %}?date=${date}&source_type={{ request.GET.source_type }}`
+        window.location = url
+    })
+    $("#id_source").select2()
+})
+</script>
+{% endblock %}

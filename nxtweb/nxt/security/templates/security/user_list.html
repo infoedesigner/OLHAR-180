@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% load widget_tweaks security_tags bootstrap5 %}
+
+{% block page_title %}Usuários{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item active" aria-current="page">Usuários</li>
+{% endblock %}
+
+{% block main %}
+<div class="row">
+    <div class="col-12">
+        <div class="card border p-0">
+            <div class="card-body">
+                <form action="" method="get">
+                    <div class="form-group">
+                        <div class="input-group">
+                            {% render_field form.q placeholder=form.q.label class="form-control" %}
+                            <span class="input-group-text">
+                                <button type="submit" class="btn btn-primary btn-sm">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Usuários</h3>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table border text-nowrap text-md-nowrap table-striped mb-0">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>E-mail</th>
+                        <th>Último acesso</th>
+                        <th>Ativo</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for current_user in object_list %}
+                <tr>
+                    <td>{{ current_user.name }}</td>
+                    <td>{{ current_user.email }}</td>
+                    <td>{{ current_user.last_access|date:'d/m/Y H:i' }}</td>
+                    <td>{{ current_user.is_active|yesno:'ATIVO,INATIVO' }}</td>
+                    <td>
+                        {% if request.user|check_nxt_permission:'update_user' %}
+                        <a href="{% url 'security:user_update' current_user.pk %}" data-bs-placement="top" data-bs-toggle="tooltip" title="Editar Usuário" class="btn btn-primary">
+                            <i class="fa fa-pencil"></i>
+                        </a>
+                        {% endif %}
+                        {% if request.user|check_nxt_permission:'deactive_user' %}
+                        <a href="" data-bs-placement="top" data-bs-toggle="tooltip" title="Remover Usuário" class="btn btn-danger">
+                            <i class="fa fa-trash"></i>
+                        </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5">
+                        <p class="alert alert-info">Nenhum usuário encontrado</p>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

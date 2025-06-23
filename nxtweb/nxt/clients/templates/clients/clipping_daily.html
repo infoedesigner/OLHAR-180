@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% load clients_tags bootstrap5 %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item active" aria-current="page">
+    Recortes Diários
+</li>
+{% endblock %}
+
+{% block page_title %}
+Recortes Diários:
+{% endblock %}
+
+{% block main %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h1>Categories and Clippings</h1>
+                        <div class="accordion" id="categoryAccordion">
+                            {% for category in categories %}
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="categoryHeading{{ forloop.counter }}">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#categoryCollapse{{ forloop.counter }}" aria-expanded="false" aria-controls="categoryCollapse{{ forloop.counter }}">
+                                            {{ category.name }}
+                                        </button>
+                                    </h2>
+                                    <div id="categoryCollapse{{ forloop.counter }}" class="accordion-collapse collapse" aria-labelledby="categoryHeading{{ forloop.counter }}" data-bs-parent="#categoryAccordion">
+                                        <div class="accordion-body">
+                                            <ul>
+                                                
+                                                {% for clipping in clippings %}
+                                                    <li>
+                                                        <strong>{{ clipping.publish_date|date:'d/m/Y' }}:</strong> {{ clipping.text|mark_keyword:clipping.keyword_used|safe }}
+                                                    </li>
+                                                    <br>
+                                                {% empty %}
+                                                    <p>Não há recortes disponíveis para essa categoria!</p>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+document.querySelectorAll('.accordion-button').forEach(function(button) {
+    button.addEventListener('click', function() {
+        this.classList.toggle('collapsed');
+    });
+});
+</script>
+{% endblock %}

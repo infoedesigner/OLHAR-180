@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% load widget_tweaks security_tags bootstrap5 %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item active" aria-current="page">Veículos</li>
+{% endblock %}
+
+{% block main %}
+<div class="row">
+    <div class="col-12">
+        <div class="card border p-0">
+            <div class="card-body">
+                <form action="" method="get">
+                    <div class="row">
+                        {% for field in form %}
+                        <div class="col-md-4">
+                            {% bootstrap_field field show_label=False placeholder=field.label %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <p style="text-align: right;">
+                        <button type="submit" class="btn btn-primary">Pesquisar</button>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Veículos</h3>
+    </div>
+    <div class="card-body">
+        <p style="text-align: right;">
+            <a href="{% url 'media:source_create' %}" class="btn btn-primary">Novo Veículo</a>
+        </p>
+        <div class="table-responsive">
+            <table class="table border table-striped mb-0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th style="width: 25%;">Nome</th>
+                        <th>Estado</th>
+                        <th>Municipio</th>
+                        <th>Última modificação</th>
+                        <th>Ativo</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for source in object_list %}
+                    <tr>
+                        <td>{{ source.pk|safe }}</td>
+                        <td>{{ source.name }}</td>
+                        <td>{{ source.state }}</td>
+                        <td>{{ source.city }}</td>
+                        <td>{{ source.modified|date:'d/m/Y H:i' }}</td>
+                        <td>
+                            <div class="material-switch">
+                                {% if source.is_active %}
+                                <input data-url="{% url 'media:source_deactivate' source.pk %}" class="source-active" id="id_is_active_{{ source.pk|safe }}" name="is_active" type="checkbox" checked {% if not user|check_nxt_permission:'deactive_source' %}disabled{% endif %}>
+                                <label for="id_is_active_{{ source.pk|safe }}" class="label-primary"></label>
+                                {% else %}
+                                <input data-url="{% url 'media:source_activate' source.pk %}"  class="source-active" id="id_is_active_{{ source.pk|safe }}" name="is_active" type="checkbox" {% if not user|check_nxt_permission:'deactive_source' %}disabled{% endif %}>
+                                <label for="id_is_active_{{ source.pk|safe }}" class="label-primary"></label>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            {% comment %}
+                            <a href="" class="btn btn-default">
+                                <i class="fa fa-eye"></i>
+                            </a>
+                            {% endcomment %}
+                            <a href="{% url 'media:source_update' source.pk %}" class="btn btn-primary" data-bs-placement="top" data-bs-toggle="tooltip-primary" title="Editar Veículo">
+                                <i class="fa fa-pencil"></i>
+                            </a>
+                            <a href="{% url 'media:editorial_list' source.pk %}" class="btn btn-primary" data-bs-placement="top" data-bs-toggle="tooltip-primary" title="Visualizar Editorias">
+                                <i class="fa fa-newspaper-o"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <hr>
+        {% bootstrap_pagination page_obj extra=request.GET.urlencode %}
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+$(function(){
+    $(".source-active").on('change', function(e){
+        let $this = $(this)
+        let url = $this.data('url')
+        axios({
+            method: 'post',
+            url: url,
+            responseType: 'json'
+        }).then(function (response){
+            $this.data('url', response.data.url)
+        })
+    })
+})
+</script>
+{% endblock %}

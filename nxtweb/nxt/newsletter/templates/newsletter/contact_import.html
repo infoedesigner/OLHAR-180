@@ -1,0 +1,49 @@
+{% extends "clients/client_base.html" %}
+
+{% load bootstrap5 %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item" aria-current="page">
+    <a href="{% url 'clients:client_detail' view.client.pk %}">{{ client }}</a>
+</li>
+<li class="breadcrumb-item" aria-current="page">
+    <a href="{% url 'newsletter:contact_list' view.client.pk %}">Contatos</a>
+</li>
+<li class="breadcrumb-item active" aria-current="page">
+    Impotar Contatos
+</li>
+{% endblock %}
+
+{% block page_title %}
+Impotar Contatos
+{% endblock %}
+
+{% block client_contacts_class %} class="active"{% endblock %}
+
+{% block client_main %}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Impotar Contatos</h3>
+    </div>
+    <div class="card-body">
+        <form action="" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <p class="alert alert-info text-center">
+                O formato do arquivo deve ser: CSV, XLS ou XLSX. A planilha deve contar 2 colunas, a primeira é o "nome" e a segunda "email"
+            </p>
+            <div class="row">
+                {% for field in form %}
+                <div class="col-md-4">
+                    {% bootstrap_field field %}
+                </div>
+                {% endfor %}
+            </div>
+            <hr>
+            <p style="text-align: right;">
+                <a href="{% url 'newsletter:contact_list' view.client.pk %}" class="btn btn-default">Voltar</a>
+                <button type="submit" class="btn btn-primary">Importar</button>
+            </p>
+        </form>
+    </div>
+</div>
+{% endblock %}

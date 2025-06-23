@@ -1,0 +1,325 @@
+{% extends "base.html" %}
+
+{% load bootstrap5 %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ STATIC_URL }}cropper/cropper.min.css">
+{% endblock %}
+
+{% block page_title %}
+{{ object|default:'Adicionar Notícia' }}
+{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item" aria-current="page">
+    <a href="{% url 'media:news_list' %}">Notícias</a>
+</li>
+<li class="breadcrumb-item active" aria-current="page">
+    {{ object|default:'Adicionar Notícia' }}
+</li>
+{% endblock %}
+
+{% block main %}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">{{ object|default:'Adicionar Notícia' }}</h3>
+    </div>
+    <div class="card-body">
+        <form action="" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-6">
+                    {% bootstrap_field form.source %}
+                </div>
+                <div class="col-md-6" id="newspaper-image">
+                    <div class="row">
+                        <div class="class-md-8">
+                            {% bootstrap_field form.newspaper %}
+                        </div>
+                        <div class="col-md-4">
+                            {% bootstrap_field form.newspaper_page %}
+                        </div>
+                    </div>
+                    {{ form.newspaper_crop }}
+                    <a href="#" id="newspaper-btn" class="btn btn-primary">Exibir Impresso</a>
+                    <div class="modal fade" id="newspaper-modal">
+                        <div class="modal-dialog modal-xl" role="document">
+                            <div class="modal-content modal-content-demo">
+                                <div class="modal-header">
+                                    <h6 class="modal-title">Recorte</h6>
+                                    <button class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">×</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <img id="newspaper-page-image" src="" alt="" style="display: block;max-width: 100%;">
+                                </div>
+                                <div class="modal-footer">
+                                    <a class="btn ripple btn-danger" data-bs-dismiss="modal" href="#">Fechar</a>
+                                    <a id="btn-cropper" class="btn ripple btn-success" href="#">Recortar</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <h3>Dados da Notícia</h3>
+            <div class="row">
+                <div class="col-md-4">
+                    {% bootstrap_field form.title %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.media_content_type %}
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="form-label" for="id_media_content_type">Editorial / Coluna</label>
+                        <select name="editorial" class="form-select" title="" id="id_editorial">
+                            <option value="">Selecione o veículo</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.url %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.resume %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.authors %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.date %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field form.hour %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-8" id="text-body-news">
+                    {% bootstrap_field form.text %}
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-md-6">
+                    <h3>Clientes</h3>
+                    <p style="text-align: right;">
+                        <a data-bs-target="#addClientModal" data-bs-toggle="modal" href="#addClientModal" class="btn btn-primary">Adicionar Cliente</a>
+                    </p>
+                    <ul class="list-group" id="clippings">
+                        {% for category in categories %}
+                        <li class="list-group-item justify-content-between">
+                            <a href="javascript:void(0)" class="btn btn-primary btn-sm client-clipping">
+                                <i class="fa fa-trash"></i>
+                            </a>
+                            {{ category.client }}
+                            <span class="badgetext badge bg-primary rounded-pill">
+                                {{ category }}
+                            </span>
+                            <input type="hidden" name="categories" value="{{ category.pk|safe }}">
+                        </li>
+                        {% empty %}
+                        <li class="list-group-item list-group-item-info">
+                            Nenhum cliente encontrado
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            <p style="text-align: right;">
+                <a href="{% url 'media:news_list' %}" class="btn btn-default">Voltar</a>
+                <button name="action" value="clipping" type="submit" class="btn btn-primary">Verificar Clientes</button>
+                <button name="action" value="save" type="submit" class="btn btn-primary">Salvar</button>
+            </p>
+        </form>
+        <div class="modal fade" id="addClientModal">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content modal-content-demo">
+                    <div class="modal-header">
+                        <h6 class="modal-title">Adicionar Cliente</h6>
+                        <button class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        {% bootstrap_field client_clipping_form.client %}
+                        <div class="mb-3">
+                            <label class="form-label" for="id_category">Categoria</label>
+                            <select class="form-select" id="id_category">
+                                <option value="">Selecione o cliente</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn ripple btn-danger" data-bs-dismiss="modal" type="button">Fechar</button>
+                        <button id="btn-add-client" class="btn ripple btn-success" type="button">Adicionar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block js %}
+{{ form.media }}
+<script src="{{ STATIC_URL }}cropper/cropper.min.js"></script>
+<script>
+const addedClientIds = []; // array to keep track of the IDs of the clients that have already been added
+$(function(){
+    $("#id_date").bootstrapdatepicker({
+        language: 'pt-BR',
+        todayHighlight: true,
+        orientation: 'bottom',
+        format: 'dd/mm/yyyy',
+        autoclose: true
+    })
+    $("#id_hour").mask("00:00", {placeholder: 'hh:mm'})
+    $("#id_source").select2()
+    $("#id_client").select2({
+        width: '100%'
+    })
+    $("#id_client").on('change', function(e){
+        let clientId = $(this).val()
+        let url = `{% url "api:category-list" %}?client=${clientId}`
+        axios({
+            method: 'get',
+            url: url,
+            responseType: 'json'
+        }).then(function (response){
+            $("#id_category").empty()
+            let categorySelect = document.getElementById('id_category')
+            let item = document.createElement('option')
+            item.setAttribute('value', '')
+            item.innerText = 'Selecione a Categoria'
+            categorySelect.children = []
+            categorySelect.appendChild(item)
+            for (let index = 0; index < response.data.results.length; index++) {
+                const category = response.data.results[index];
+                item = document.createElement('option')
+                item.setAttribute('value', category.id)
+                item.innerText = category.name
+                categorySelect.appendChild(item)
+            }
+        })
+    })
+    $("#btn-add-client").on("click", function(e){
+        e.preventDefault()
+        $("#addClientModal").modal("hide")
+        let client = $("#id_client option:selected").text()
+        const clientId = Number($("#id_client option:selected").val());
+        
+        if (!addedClientIds.includes(clientId)) {
+            let category = $("#id_category option:selected").text()
+            let categoriId = $("#id_category").val()
+            let html = '<li class="list-group-item justify-content-between">' +
+                '<a href="javascript:void(0)"' +
+                'class="btn btn-primary btn-sm client-clipping">' +
+                '<i class="fa fa-trash"></i></a> ' + client +
+                '<span class="badgetext badge bg-primary rounded-pill">' + category +
+                '</span><input type="hidden" name="categories" value="' + categoriId + '" /></li>'
+            $("#clippings").append(html)
+            addedClientIds.push(clientId);
+            $(".list-group-item-info").remove();
+        }
+    })
+    $("#clippings").on('click', '.client-clipping', function(e){
+        e.preventDefault()
+        let $elem = $(this)
+        $elem.closest('li').remove()
+    })
+    function checkNewspaper() {
+        let source = $("#id_source").val()
+        if(source) {
+            let url = `{% url "media:check_newspaper_source" %}?source=${source}`
+            axios.get(url).then(res => {
+                let source = res.data
+                if(source.source_type == 'impresso') {
+                    $("#newspaper-image").show()
+                } else {
+                    $("#newspaper-image").hide()
+                }
+            })
+        } else {
+            $("#newspaper-image").hide()
+        }
+    }
+    checkNewspaper()
+    $("#id_source").on('change', function(e){
+        checkNewspaper()
+    })
+    let cropper = null
+    $("#newspaper-btn").on("click", function(e) {
+        let newspaper = $("#id_newspaper").val()
+        let newspaperPage = $("#id_newspaper_page").val()
+        let urlImage = `/media/media/newspaper/${newspaper}/${newspaperPage}.png`
+        $("#newspaper-page-image").prop("src", urlImage)
+        $("#newspaper-modal").modal('show')
+        let image = document.getElementById('newspaper-page-image');
+        cropper = new Cropper(image, {
+            minContainerWidth: 600,
+            minContainerHeight: 600
+        })
+    })
+    $("#btn-cropper").on("click", function(e){
+        e.preventDefault()
+        let image64 = cropper.getCroppedCanvas().toDataURL("image/png");
+        $("#id_newspaper_crop").val(image64)
+        $("#newspaper-modal").modal('hide')
+    })
+    function checkEditorial(initial) {
+        let source = $("#id_source").val()
+        $("#id_editorial").html('<option value="">Selecione o veículo</option>')
+        if(source !== '') {
+            let url = `{% url "api:editorial-list" %}?source=${source}`
+            axios.get(url).then(res => {
+                for (let index = 0; index < res.data.results.length; index++) {
+                    const element = res.data.results[index];
+                    $("#id_editorial").append(`<option value="${element.id}">${element.name}</option>`)
+                }
+                if(initial) {
+                    $("#id_editorial").val("{{ object.editorial.pk }}")
+                }
+            })
+        }
+        $("#id_editorial").select2()
+    }
+    checkEditorial(true)
+    $("#id_source").on('change', function(e){
+        checkEditorial(false)
+    })
+})
+$('button[name="action"][value="clipping"]').on('click', function(event) {
+    event.preventDefault();
+
+    let searchQuery = $('iframe').contents().find('p').text();
+
+    $.ajax({
+        url: "{% url 'media:search_category_by_words' %}",
+        type: 'GET',
+        data: {'keyword': searchQuery},
+        success: function(response) {
+                let clients = response.clients;
+
+                for (client of clients){
+                    if (!addedClientIds.includes(client.id)) {
+                        let html = '<li class="list-group-item justify-content-between">' +
+                            '<a href="javascript:void(0)"' +
+                            'class="btn btn-primary btn-sm client-clipping">' +
+                            '<i class="fa fa-trash"></i></a> ' + client.company_name +
+                            '<span class="badgetext badge bg-primary rounded-pill">' + client.category +
+                            '</span><input type="hidden" name="categories" value="' + client.category_id + '" /></li>'
+                        $("#clippings").append(html)
+                        addedClientIds.push(client.id);
+                        $(".list-group-item-info").remove();
+                    }
+                }
+            },
+            error: function(xhr, status, error) {
+                console.log(error);
+            }
+        });
+});
+</script>
+{% endblock %}
