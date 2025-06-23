@@ -14,6 +14,7 @@ Este é o README do projeto Content, uma aplicação Django que gerencia cliente
 1. Execute o contêiner do PostgreSQL com o seguinte comando:
 
 docker run --name nxt-web -e POSTGRES_DB=nxt -e POSTGRES_USER=nxt -e POSTGRES_PASSWORD=nxt -v ./nxt.backup:/app/nxt.backup -p 5432:5432 -d postgres:14
+
 OBS: Faça o Download do arquivo "NTX.BACKUP" pelo link: https://infoedesigner.com.br/nxt.zip (Após o Download extrair o arquivo e depois vai aparecer "NTX.BACKUP".
 
 2. Acesse o CLI dentro do contêiner:
